@@ -7,6 +7,13 @@ const quickPrompts = [
   "Que faire pour debuter sur PowerPoint ?"
 ];
 
+const modes = [
+  { id: "tutor", label: "Tutorat" },
+  { id: "guide_3_steps", label: "Guide 3 etapes" },
+  { id: "rewrite_email", label: "Reecrire email" },
+  { id: "next_course", label: "Prochain cours" }
+];
+
 function getRouteContext(pathname) {
   if (pathname.includes("formations")) return "formations Excel, Word, PowerPoint";
   if (pathname.includes("outils-ia")) return "outils IA pratiques";
@@ -16,8 +23,16 @@ function getRouteContext(pathname) {
   return "apprentissage numerique pour seniors";
 }
 
-function buildOfflineReply(message, context) {
+function buildOfflineReply(mode, message, context) {
   const text = String(message || "").toLowerCase();
+
+  if (mode === "next_course") {
+    return "1. Prochain module recommande: Excel Graphiques.\n2. Pourquoi: vous consoliderez les bases tableau deja apprises.\n3. Mini plan 7 jours: 10 minutes/jour sur un mini fichier.\nSouhaitez-vous un exercice pratique ?";
+  }
+
+  if (mode === "rewrite_email") {
+    return "1. Objet suggere: Demande d'information.\n2. Email propose: Bonjour, je vous contacte pour ...\n3. Relisez puis adaptez les noms et la date.\nSouhaitez-vous un exercice pratique ?";
+  }
 
   if (text.includes("excel")) {
     return "1. Ouvrez Excel et choisissez un classeur vide.\n2. Ecrivez vos titres en ligne 1.\n3. Utilisez SOMME pour additionner une colonne.\nExemple: =SOMME(B2:B8).\nSouhaitez-vous un exercice pratique ?";
@@ -35,11 +50,12 @@ function SeniorChat({ apiAvailable, resolveApiPath }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [input, setInput] = useState("");
+  const [mode, setMode] = useState("tutor");
   const [messages, setMessages] = useState([
     {
       role: "assistant",
       content:
-        "Bonjour, je suis le tuteur Prometheus. Posez votre question, je reponds en etapes simples."
+        "Bonjour, je suis le Tuteur Prométhée. Posez votre question, je reponds en etapes simples."
     }
   ]);
   const inputRef = useRef(null);
@@ -67,7 +83,7 @@ function SeniorChat({ apiAvailable, resolveApiPath }) {
     setIsSending(true);
 
     if (!apiAvailable) {
-      pushAssistantMessage(buildOfflineReply(message, context));
+      pushAssistantMessage(buildOfflineReply(mode, message, context));
       setIsSending(false);
       return;
     }
@@ -78,16 +94,35 @@ function SeniorChat({ apiAvailable, resolveApiPath }) {
         content: entry.content
       }));
 
-      const response = await fetch(resolveApiPath("/api/ai/tutor"), {
+      const endpoint =
+        mode === "guide_3_steps"
+          ? "/api/ai/guide"
+          : mode === "rewrite_email"
+          ? "/api/ai/rewrite"
+          : mode === "next_course"
+          ? "/api/ai/next-course"
+          : "/api/ai/tutor";
+
+      const body =
+        mode === "next_course"
+          ? {
+              objective: message,
+              completedModules: ["Excel Base", "Word Base"],
+              context
+            }
+          : {
+              message,
+              context,
+              history,
+              intent: mode
+            };
+
+      const response = await fetch(resolveApiPath(endpoint), {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({
-          message,
-          context,
-          history
-        })
+        body: JSON.stringify(body)
       });
 
       const result = await response.json();
@@ -116,13 +151,27 @@ function SeniorChat({ apiAvailable, resolveApiPath }) {
         <section className="chat-panel" aria-live="polite">
           <header className="chat-header">
             <div>
-              <strong>Tuteur Prometheus</strong>
+              <strong>Tuteur Prométhée</strong>
               <p>{apiAvailable ? "Assistant IA actif" : "Mode demo local"}</p>
             </div>
             <button type="button" className="chat-close" onClick={toggleChat}>
               Fermer
             </button>
           </header>
+
+          <div className="chat-modes">
+            {modes.map((entry) => (
+              <button
+                key={entry.id}
+                type="button"
+                className={`chat-mode-btn ${mode === entry.id ? "active" : ""}`}
+                onClick={() => setMode(entry.id)}
+                disabled={isSending}
+              >
+                {entry.label}
+              </button>
+            ))}
+          </div>
 
           <div className="chat-prompts">
             {quickPrompts.map((prompt) => (
@@ -167,7 +216,7 @@ function SeniorChat({ apiAvailable, resolveApiPath }) {
       ) : null}
 
       <button type="button" className="chat-toggle-btn" onClick={toggleChat}>
-        Parler au tuteur IA
+        Parler au Tuteur Prométhée
       </button>
     </div>
   );

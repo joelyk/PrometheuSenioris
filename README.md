@@ -39,8 +39,12 @@ Le tuteur IA du frontend appelle le backend, jamais la cle API directement.
 - `GET /api/health`
 - `GET /api/content`
 - `GET /api/pricing`
+- `GET /api/ai/capabilities`
 - `POST /api/contact`
 - `POST /api/ai/tutor`
+- `POST /api/ai/guide`
+- `POST /api/ai/rewrite`
+- `POST /api/ai/next-course`
 
 ## Image de presentation
 

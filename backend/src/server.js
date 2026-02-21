@@ -2,7 +2,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
 import { siteContent } from "./data/site-content.js";
-import { askAiTutor } from "./services/ai-tutor.js";
+import { askAiTutor, getSupportedIntents, runAiAssistant } from "./services/ai-tutor.js";
 
 dotenv.config();
 
@@ -36,6 +36,14 @@ app.get("/api/pricing", (_req, res) => {
   res.json(siteContent.pricing);
 });
 
+app.get("/api/ai/capabilities", (_req, res) => {
+  res.json({
+    provider: "openai",
+    model: process.env.OPENAI_MODEL || "gpt-4o-mini",
+    intents: getSupportedIntents()
+  });
+});
+
 app.post("/api/contact", (req, res) => {
   const { name, email, goal, plan } = req.body ?? {};
   if (!name || !email || !goal) {
@@ -65,14 +73,100 @@ app.post("/api/contact", (req, res) => {
 });
 
 app.post("/api/ai/tutor", async (req, res) => {
-  const { message, history, context } = req.body ?? {};
+  const { message, history, context, intent } = req.body ?? {};
 
   try {
-    const result = await askAiTutor({ message, history, context });
+    const result =
+      intent && intent !== "tutor"
+        ? await runAiAssistant({ intent, message, history, context })
+        : await askAiTutor({ message, history, context });
     res.json({
       success: true,
       answer: result.answer,
-      model: result.model
+      model: result.model,
+      intent: result.intent
+    });
+  } catch (error) {
+    const statusCode = Number(error.statusCode) || 500;
+    res.status(statusCode).json({
+      success: false,
+      message:
+        statusCode === 503
+          ? "Assistant IA indisponible: configurez OPENAI_API_KEY sur le backend."
+          : error.message || "Erreur IA temporaire."
+    });
+  }
+});
+
+app.post("/api/ai/guide", async (req, res) => {
+  const { message, context } = req.body ?? {};
+
+  try {
+    const result = await runAiAssistant({
+      intent: "guide_3_steps",
+      message,
+      context
+    });
+    res.json({
+      success: true,
+      answer: result.answer,
+      model: result.model,
+      intent: result.intent
+    });
+  } catch (error) {
+    const statusCode = Number(error.statusCode) || 500;
+    res.status(statusCode).json({
+      success: false,
+      message:
+        statusCode === 503
+          ? "Assistant IA indisponible: configurez OPENAI_API_KEY sur le backend."
+          : error.message || "Erreur IA temporaire."
+    });
+  }
+});
+
+app.post("/api/ai/rewrite", async (req, res) => {
+  const { message, context } = req.body ?? {};
+
+  try {
+    const result = await runAiAssistant({
+      intent: "rewrite_email",
+      message,
+      context
+    });
+    res.json({
+      success: true,
+      answer: result.answer,
+      model: result.model,
+      intent: result.intent
+    });
+  } catch (error) {
+    const statusCode = Number(error.statusCode) || 500;
+    res.status(statusCode).json({
+      success: false,
+      message:
+        statusCode === 503
+          ? "Assistant IA indisponible: configurez OPENAI_API_KEY sur le backend."
+          : error.message || "Erreur IA temporaire."
+    });
+  }
+});
+
+app.post("/api/ai/next-course", async (req, res) => {
+  const { objective, completedModules, context } = req.body ?? {};
+
+  try {
+    const result = await runAiAssistant({
+      intent: "next_course",
+      objective,
+      completedModules,
+      context
+    });
+    res.json({
+      success: true,
+      answer: result.answer,
+      model: result.model,
+      intent: result.intent
     });
   } catch (error) {
     const statusCode = Number(error.statusCode) || 500;
