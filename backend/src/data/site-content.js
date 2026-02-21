@@ -9,13 +9,13 @@ export const siteContent = {
     subheadline:
       "Prometheus aide les seniors a maitriser Excel, Word, PowerPoint et les outils IA utiles au quotidien.",
     ctaPrimary: "Voir les offres",
-    ctaSecondary: "Reserver un appel",
+    ctaSecondary: "Demander un rappel",
     imagePath: "/images/pexels-fauxels-3184291.jpg",
     imageAlt: "Accompagnement numerique bienveillant pour seniors",
     metrics: [
       {
         value: "7 jours",
-        label: "programme intensif par outil"
+        label: "programme intensif sur 7 jours"
       },
       {
         value: "8 outils IA",
@@ -84,7 +84,7 @@ export const siteContent = {
   ],
   pillars: [
     {
-      title: "Pedagogie senior-first",
+      title: "Pedagogie adaptee aux seniors",
       description:
         "Navigation claire, rythme progressif, vocabulaire simple et repetition intelligente."
     },
@@ -123,7 +123,7 @@ export const siteContent = {
     {
       day: "Jour 5",
       focus: "IA pratique",
-      detail: "Prompting simple et verification des reponses."
+      detail: "Questions simples a l'IA, puis verification des reponses."
     },
     {
       day: "Jour 6",
@@ -170,7 +170,7 @@ export const siteContent = {
     {
       name: "Canva IA",
       role: "Creation visuelle",
-      usage: "Concevoir affiches, presentions et supports visuels rapidement."
+      usage: "Concevoir affiches, presentations et supports visuels rapidement."
     },
     {
       name: "Microsoft Copilot",

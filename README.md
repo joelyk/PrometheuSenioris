@@ -28,6 +28,12 @@ Copiez `backend/.env.example` vers `backend/.env` puis renseignez:
 
 Le tuteur IA du frontend appelle le backend, jamais la cle API directement.
 
+## Backend (options)
+
+- CORS: configure `FRONTEND_ORIGINS` (ex: GitHub Pages + local)
+- Persistance leads (optionnel): `LEADS_PERSIST_PATH=storage/leads.json`
+- Admin (optionnel): `ADMIN_API_KEY` + header `x-admin-key` pour `GET /api/admin/leads`
+
 ## Scripts
 
 - `npm run dev`: lance frontend + backend
@@ -39,6 +45,7 @@ Le tuteur IA du frontend appelle le backend, jamais la cle API directement.
 - `GET /api/health`
 - `GET /api/content`
 - `GET /api/pricing`
+- `GET /api/admin/leads`
 - `GET /api/ai/capabilities`
 - `POST /api/contact`
 - `POST /api/ai/tutor`
@@ -58,6 +65,7 @@ Oui, c'est possible de visualiser le site via GitHub Pages.
 - Workflow configure: `.github/workflows/deploy-pages.yml`
 - Le frontend React est deployee automatiquement sur `main`
 - Le mode demo GitHub Pages utilise un contenu fallback si l'API backend n'est pas disponible
+- Pour activer le backend sur GitHub Pages: definir la variable Actions `VITE_API_URL` (URL de votre backend)
 
 ### Important
 
