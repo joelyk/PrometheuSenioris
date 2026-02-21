@@ -234,5 +234,52 @@ export const siteContent = {
       "Bibliotheque de parcours par role (support, vente, admin)",
       "Mode inter-entreprise pour mutualiser les bonnes pratiques"
     ]
-  }
+  },
+  testimonials: [
+    {
+      name: "Marie T.",
+      profile: "Retraitee active",
+      quote:
+        "En une semaine, j'ai appris a faire mes tableaux Excel sans stress et a utiliser ChatGPT pour mes courriers."
+    },
+    {
+      name: "Jacques D.",
+      profile: "Consultant senior",
+      quote:
+        "Le format pas a pas est excellent. J'ai enfin compris comment structurer mes slides PowerPoint proprement."
+    },
+    {
+      name: "Nadia B.",
+      profile: "RH en PME",
+      quote:
+        "Prometheus est ideal pour accompagner les collaborateurs experimentes dans les nouveaux outils numeriques."
+    }
+  ],
+  faq: [
+    {
+      question: "Le programme est-il adapte aux debutants complets ?",
+      answer:
+        "Oui. Nous partons des bases avec un rythme progressif et un accompagnement humain."
+    },
+    {
+      question: "Combien de temps faut-il par jour ?",
+      answer:
+        "En general 45 a 60 minutes de session, puis 10 a 15 minutes de pratique quotidienne."
+    },
+    {
+      question: "Puis-je choisir seulement Excel ou Word ?",
+      answer:
+        "Oui. Les formations de base peuvent etre suivies separement selon vos besoins."
+    },
+    {
+      question: "Est-ce utile pour un usage en entreprise ?",
+      answer:
+        "Oui. Le parcours couvre les usages bureautiques et l'adoption d'outils IA en contexte professionnel."
+    },
+    {
+      question: "Le formulaire fonctionne sur GitHub Pages ?",
+      answer:
+        "En mode demo statique non. Le formulaire complet fonctionne avec la version backend deployee."
+    }
+  ]
 };

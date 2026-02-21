@@ -119,14 +119,29 @@ nav a {
   color: var(--text-soft);
   font-size: 0.92rem;
   font-weight: 500;
+  padding: 0.15rem 0.2rem;
+  border-radius: 8px;
 }
 
 nav a:hover {
   color: var(--primary-dark);
 }
 
+.main-nav a[aria-current="page"] {
+  color: #0d4d83;
+  background: #e2f0ff;
+}
+
 .hero {
   padding-top: 5rem;
+}
+
+.route-page {
+  min-height: calc(100vh - 120px);
+}
+
+.page-intro h1 {
+  max-width: 820px;
 }
 
 .demo-banner {
@@ -356,6 +371,50 @@ h1 {
   font-size: 0.95rem;
 }
 
+.quote-card {
+  border-radius: 24px;
+  border: 1px solid #c7dff5;
+  background: linear-gradient(160deg, #ffffff 0%, #f0f8ff 100%);
+  box-shadow: var(--shadow-soft);
+  padding: 1.1rem;
+}
+
+.quote-text {
+  margin: 0;
+  color: #224d72;
+  font-weight: 500;
+}
+
+.quote-author {
+  margin: 0.75rem 0 0;
+  color: #295f8d;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.faq-list {
+  margin-top: 1rem;
+  display: grid;
+  gap: 0.85rem;
+}
+
+.faq-item {
+  border-radius: 18px;
+  border: 1px solid #c8def4;
+  background: #ffffff;
+  box-shadow: var(--shadow-soft);
+  padding: 1rem;
+}
+
+.faq-item h3 {
+  font-size: 1.02rem;
+}
+
+.faq-item p {
+  margin: 0.45rem 0 0;
+  color: var(--text-soft);
+}
+
 .timeline {
   margin-top: 1.5rem;
   display: grid;
@@ -509,6 +568,11 @@ h1 {
   display: grid;
   gap: 0.42rem;
   flex: 1;
+}
+
+.pricing-card .btn {
+  display: inline-block;
+  text-align: center;
 }
 
 .vision-panel {

@@ -7,6 +7,7 @@ Plateforme web React + backend Express pour faciliter l'apprentissage de l'infor
 - Frontend: React + Vite
 - Backend: Node.js + Express
 - Style: Poppins, palette bleu clair / blanc, design responsive
+- Navigation: multi-pages React (Accueil, Formations, Outils IA, Offres, Vision, Contact)
 
 ## Lancement local
 
