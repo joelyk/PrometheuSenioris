@@ -19,6 +19,15 @@ npm run dev
 Frontend: `http://localhost:5173`  
 Backend API: `http://localhost:4000`
 
+## Configuration IA (OpenAI)
+
+Copiez `backend/.env.example` vers `backend/.env` puis renseignez:
+
+- `OPENAI_API_KEY`
+- `OPENAI_MODEL` (par defaut: `gpt-4o-mini`)
+
+Le tuteur IA du frontend appelle le backend, jamais la cle API directement.
+
 ## Scripts
 
 - `npm run dev`: lance frontend + backend
@@ -31,6 +40,7 @@ Backend API: `http://localhost:4000`
 - `GET /api/content`
 - `GET /api/pricing`
 - `POST /api/contact`
+- `POST /api/ai/tutor`
 
 ## Image de presentation
 
@@ -49,3 +59,5 @@ Oui, c'est possible de visualiser le site via GitHub Pages.
 
 GitHub Pages heberge seulement du statique (frontend).  
 Le backend Express (`/api`) doit etre deploye separement (ex: Render, Railway, Fly.io), puis renseigne via `VITE_API_URL`.
+
+Pour le tuteur IA en production: deployez le backend avec `OPENAI_API_KEY`.

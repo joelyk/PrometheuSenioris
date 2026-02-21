@@ -2,6 +2,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
 import { siteContent } from "./data/site-content.js";
+import { askAiTutor } from "./services/ai-tutor.js";
 
 dotenv.config();
 
@@ -61,6 +62,28 @@ app.post("/api/contact", (req, res) => {
     message: "Votre demande a bien ete envoyee. Un conseiller vous recontacte sous 24h.",
     lead: newLead
   });
+});
+
+app.post("/api/ai/tutor", async (req, res) => {
+  const { message, history, context } = req.body ?? {};
+
+  try {
+    const result = await askAiTutor({ message, history, context });
+    res.json({
+      success: true,
+      answer: result.answer,
+      model: result.model
+    });
+  } catch (error) {
+    const statusCode = Number(error.statusCode) || 500;
+    res.status(statusCode).json({
+      success: false,
+      message:
+        statusCode === 503
+          ? "Assistant IA indisponible: configurez OPENAI_API_KEY sur le backend."
+          : error.message || "Erreur IA temporaire."
+    });
+  }
 });
 
 app.listen(port, () => {

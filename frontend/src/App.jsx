@@ -8,6 +8,7 @@ import {
   Routes
 } from "react-router-dom";
 import { fallbackContent } from "./fallbackContent";
+import SeniorChat from "./components/SeniorChat";
 
 const API_BASE = import.meta.env.VITE_API_URL || "";
 const BASE_URL = import.meta.env.BASE_URL || "/";
@@ -576,6 +577,8 @@ function App() {
             autonomie.
           </p>
         </footer>
+
+        <SeniorChat apiAvailable={apiAvailable} resolveApiPath={getApiPath} />
       </div>
     </HashRouter>
   );
