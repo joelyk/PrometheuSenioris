@@ -150,7 +150,7 @@ function SeniorChat({ apiAvailable, resolveApiPath }) {
           <header className="chat-header">
             <div>
               <strong>Tuteur Prométhée</strong>
-              <p>{apiAvailable ? "Assistant IA actif" : "Mode demo local"}</p>
+              <p>{apiAvailable ? "Assistant IA actif" : "Assistant guide disponible"}</p>
             </div>
             <button type="button" className="chat-close" onClick={toggleChat}>
               Fermer

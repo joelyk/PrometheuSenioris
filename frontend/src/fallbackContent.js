@@ -17,7 +17,7 @@
       "Prometheus resout vos taches bureautiques, vous aide a produire des documents solides, a comprendre l'IA et a suivre des formations personnalisees sur Excel, Word, PowerPoint et les usages numeriques utiles.",
     ctaPrimary: "Demander un devis",
     ctaSecondary: "Reserver un creneau",
-    imagePath: "/images/pexels-fauxels-3184291.jpg",
+    imagePath: "/images/pexels-kampus-7551617.jpg",
     imageAlt: "Accompagnement informatique et bureautique en session de travail",
     metrics: [
       {
@@ -142,7 +142,7 @@
       format: "Texte + capsules video",
       summary:
         "Comprendre les bases solides: tableaux propres, formules utiles, filtres, pourcentages et graphiques simples.",
-      imagePath: "/images/pexels-fauxels-3184291.jpg",
+      imagePath: "/images/pexels-kampus-7983612.jpg",
       outcomes: [
         "Creer un tableau exploitable rapidement",
         "Utiliser SOMME, MOYENNE et pourcentage",
@@ -192,7 +192,7 @@
       format: "Texte + video + modele",
       summary:
         "Structurer un document propre: styles, sommaire, pagination, images, sections et export PDF fiable.",
-      imagePath: "/images/pexels-fauxels-3184291.jpg",
+      imagePath: "/images/pexels-kampus-7983616.jpg",
       outcomes: [
         "Monter un document long sans chaos",
         "Uniformiser titres et sous-titres",
@@ -431,6 +431,35 @@
         "L'aide sur ChatGPT et la reformulation de documents m'a permis d'aller plus vite tout en gardant le controle."
     }
   ],
+  blogPosts: [
+    {
+      id: "excel-demande-claire",
+      category: "Productivite",
+      title: "Comment cadrer une demande Excel avant de demander de l'aide",
+      excerpt:
+        "Les 4 informations a fournir pour obtenir une reponse rapide sur un tableau, une formule ou un fichier a corriger.",
+      readTime: "4 min",
+      imagePath: "/images/pexels-kampus-7983612.jpg"
+    },
+    {
+      id: "ia-bon-outil",
+      category: "IA",
+      title: "ChatGPT, Claude ou Perplexity: quel outil choisir selon la tache",
+      excerpt:
+        "Une grille simple pour savoir quel assistant utiliser pour rediger, verifier ou synthetiser sans perdre de temps.",
+      readTime: "5 min",
+      imagePath: "/images/pexels-kampus-7983616.jpg"
+    },
+    {
+      id: "document-structure",
+      category: "Documents",
+      title: "Les erreurs de structure qui ralentissent un memoire ou un rapport",
+      excerpt:
+        "Avant de corriger le style, il faut d'abord stabiliser les titres, le plan, la pagination et les parties attendues.",
+      readTime: "6 min",
+      imagePath: "/images/pexels-fauxels-3184291.jpg"
+    }
+  ],
   faq: [
     {
       question: "Prometheus fait-il a ma place ou m'apprend a faire ?",
@@ -454,4 +483,5 @@
     }
   ]
 };
+
 

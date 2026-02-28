@@ -164,6 +164,21 @@ function buildReservationMessage(content, formData) {
   ].join("\n");
 }
 function HomePage({ bookingWhatsappUrl, content, quoteWhatsappUrl, resolveImage }) {
+  const clarityBlocks = [
+    {
+      title: "Deleguer une tache",
+      text: "Vous avez un document, un tableau, un CV ou une presentation a corriger ou finaliser."
+    },
+    {
+      title: "Apprendre un outil",
+      text: "Vous voulez comprendre Excel, Word, PowerPoint ou un outil IA avec une methode simple."
+    },
+    {
+      title: "Reserver un accompagnement",
+      text: "Vous avez besoin d'un devis rapide, d'un creneau de travail ou d'une formation personnalisee."
+    }
+  ];
+
   return (
     <main className="route-page">
       <section className="container hero">
@@ -205,24 +220,17 @@ function HomePage({ bookingWhatsappUrl, content, quoteWhatsappUrl, resolveImage 
 
       <section className="container section">
         <div className="section-heading">
-          <p className="eyebrow">Services</p>
-          <h2>Ce que Prometheus prend en charge</h2>
-          <p className="hero-copy">
-            Le site est ouvert a tous. L'offre couvre l'execution, la correction et la formation sur des besoins numeriques concrets.
-          </p>
+          <p className="eyebrow">Comprendre en un regard</p>
+          <h2>Trois facons simples de travailler avec Prometheus</h2>
         </div>
-        <div className="card-grid four">
-          {content.serviceCategories.map((category) => (
-            <article key={category.id} className="service-card">
-              <div className="service-topline">{category.title}</div>
-              <p className="service-summary">{category.summary}</p>
-              <ul className="detail-list">
-                {category.items.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
+        <div className="home-clarity-grid">
+          {clarityBlocks.map((block, index) => (
+            <article key={block.title} className="clarity-card">
+              <span className="clarity-index">0{index + 1}</span>
+              <h3>{block.title}</h3>
+              <p>{block.text}</p>
               <Link to="/reservation" className="link-button">
-                {category.cta}
+                Commencer
               </Link>
             </article>
           ))}
@@ -231,16 +239,25 @@ function HomePage({ bookingWhatsappUrl, content, quoteWhatsappUrl, resolveImage 
 
       <section className="container section">
         <div className="section-heading">
-          <p className="eyebrow">Publics</p>
-          <h2>Un accompagnement pour tous les profils</h2>
+          <p className="eyebrow">Services</p>
+          <h2>Ce que vous pouvez demander tout de suite</h2>
+          <p className="hero-copy">
+            L'offre couvre l'execution, la correction et la formation sur des besoins numeriques concrets.
+          </p>
         </div>
         <div className="card-grid four">
-          {content.audiences.map((audience) => (
-            <article key={audience.title} className="audience-card">
-              <p className="audience-kicker">Profil</p>
-              <h3>{audience.title}</h3>
-              <p>{audience.detail}</p>
-              <p className="audience-benefit">{audience.benefit}</p>
+          {content.serviceCategories.map((category) => (
+            <article key={category.id} className="service-card">
+              <div className="service-topline">{category.title}</div>
+              <p className="service-summary">{category.summary}</p>
+              <ul className="detail-list">
+                {category.items.slice(0, 3).map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+              <Link to="/services" className="link-button">
+                Voir le detail
+              </Link>
             </article>
           ))}
         </div>
@@ -249,7 +266,7 @@ function HomePage({ bookingWhatsappUrl, content, quoteWhatsappUrl, resolveImage 
       <section className="container section">
         <div className="section-heading">
           <p className="eyebrow">Process</p>
-          <h2>Comment une demande est traitee</h2>
+          <h2>Comment demarrer sans perdre de temps</h2>
         </div>
         <div className="timeline process-grid">
           {content.workflow.map((step) => (
@@ -277,6 +294,30 @@ function HomePage({ bookingWhatsappUrl, content, quoteWhatsappUrl, resolveImage 
               Devis sur WhatsApp
             </a>
           </div>
+        </div>
+      </section>
+
+      <section className="container section">
+        <div className="section-heading">
+          <p className="eyebrow">Blog</p>
+          <h2>Conseils pratiques avant de reserver</h2>
+        </div>
+        <div className="card-grid three">
+          {content.blogPosts.map((post) => (
+            <article key={post.id} className="blog-card">
+              <img src={resolveImage(post.imagePath)} alt={post.title} loading="lazy" />
+              <div className="blog-card-body">
+                <p className="blog-meta">
+                  {post.category} - {post.readTime}
+                </p>
+                <h3>{post.title}</h3>
+                <p>{post.excerpt}</p>
+                <Link to="/blog" className="link-button">
+                  Lire le blog
+                </Link>
+              </div>
+            </article>
+          ))}
         </div>
       </section>
 
@@ -375,6 +416,61 @@ function ServicesPage({ content, quoteWhatsappUrl }) {
     </main>
   );
 }
+
+function BlogPage({ content, resolveImage }) {
+  const [featuredPost, ...otherPosts] = content.blogPosts;
+
+  return (
+    <main className="route-page">
+      <section className="container hero page-intro">
+        <p className="eyebrow">Blog</p>
+        <h1>Articles pratiques pour mieux preparer vos demandes et vos outils</h1>
+        <p className="hero-copy">
+          Le blog explique comment cadrer un besoin, choisir un bon outil et corriger les erreurs les plus frequentes avant de lancer une mission ou une formation.
+        </p>
+      </section>
+
+      {featuredPost ? (
+        <section className="container section">
+          <article className="blog-featured-panel">
+            <img src={resolveImage(featuredPost.imagePath)} alt={featuredPost.title} loading="lazy" />
+            <div>
+              <p className="blog-meta">
+                {featuredPost.category} - {featuredPost.readTime}
+              </p>
+              <h2>{featuredPost.title}</h2>
+              <p>{featuredPost.excerpt}</p>
+              <Link to="/reservation" className="btn btn-primary">
+                Transformer ce besoin en demande concrete
+              </Link>
+            </div>
+          </article>
+        </section>
+      ) : null}
+
+      <section className="container section contact-section">
+        <div className="card-grid three">
+          {otherPosts.map((post) => (
+            <article key={post.id} className="blog-card">
+              <img src={resolveImage(post.imagePath)} alt={post.title} loading="lazy" />
+              <div className="blog-card-body">
+                <p className="blog-meta">
+                  {post.category} - {post.readTime}
+                </p>
+                <h3>{post.title}</h3>
+                <p>{post.excerpt}</p>
+                <Link to="/reservation" className="link-button">
+                  Demander un accompagnement
+                </Link>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+    </main>
+  );
+}
+
 function LessonCard({ lesson, onUnlock }) {
   if (lesson.locked) {
     return (
@@ -632,11 +728,6 @@ function ReservationPage({
             </button>
 
             {feedback ? <p className="feedback">{feedback}</p> : null}
-            {!apiAvailable ? (
-              <p className="feedback">
-                Mode demo: la demande n'est pas sauvegardee cote serveur, mais vous pouvez continuer vers WhatsApp.
-              </p>
-            ) : null}
 
             {nextWhatsappUrl ? (
               <a href={nextWhatsappUrl} className="btn btn-outline" target="_blank" rel="noreferrer">
@@ -720,7 +811,7 @@ function AdminPage({
         <p className="eyebrow">Connexion</p>
         <h1>Espace administrateur pour gerer les visuels des formations</h1>
         <p className="hero-copy">
-          Cette zone sert a modifier l'image hero et les images des modules. Si le backend admin est configure, les changements sont persistants. Sinon, ils restent en mode demo local.
+          Cette zone permet de piloter l'image principale du site et les visuels des formations depuis une interface reservee a l'administration.
         </p>
       </section>
 
@@ -728,11 +819,11 @@ function AdminPage({
         {!isAdmin ? (
           <div className="admin-card">
             <p className="eyebrow">Authentification</p>
-            <h2>{isRemoteAdminAvailable ? "Connexion admin backend" : "Connexion demo locale"}</h2>
+            <h2>{isRemoteAdminAvailable ? "Connexion administrateur" : "Acces de configuration"}</h2>
             <p>
               {isRemoteAdminAvailable
-                ? "Entrez la cle admin configuree sur le backend pour recevoir une session signee."
-                : `Le backend admin n'est pas disponible. Utilisez le mot de passe demo ${DEMO_ADMIN_PASSWORD} pour previsualiser les changements localement.`}
+                ? "Entrez vos informations d'administration pour gerer les visuels du site."
+                : "Cette interface permet de preparer ou mettre a jour les visuels du site sur cet environnement."}
             </p>
             <form className="contact-form admin-login-form" onSubmit={handleAdminLogin}>
               <label htmlFor="adminPassword">Mot de passe admin</label>
@@ -755,7 +846,7 @@ function AdminPage({
             <div className="admin-card admin-card-toolbar">
               <div>
                 <p className="eyebrow">Session active</p>
-                <h2>Mode {adminMode === "remote" ? "backend" : "demo local"}</h2>
+                <h2>Mode {adminMode === "remote" ? "synchronise" : "edition"}</h2>
               </div>
               <button type="button" className="btn btn-outline" onClick={handleAdminLogout}>
                 Se deconnecter
@@ -768,7 +859,7 @@ function AdminPage({
                 id="heroImagePath"
                 value={draft.heroImagePath}
                 onChange={(event) => updateHeroImage(event.target.value)}
-                placeholder="/images/pexels-fauxels-3184291.jpg"
+                placeholder="/images/pexels-kampus-7551617.jpg"
               />
 
               <div className="admin-grid">
@@ -922,7 +1013,7 @@ function AppShell() {
     const whatsappUrl = buildWhatsappUrl(activeContent, whatsappMessage);
 
     if (!apiAvailable) {
-      setFeedback("Mode demo: la demande reste locale. Vous pouvez poursuivre sur WhatsApp.");
+      setFeedback("Votre demande est prete. Vous pouvez poursuivre sur WhatsApp.");
       setNextWhatsappUrl(whatsappUrl);
       return;
     }
@@ -964,7 +1055,7 @@ function AppShell() {
 
     if (!isRemoteAdminAvailable) {
       if (adminPassword.trim() !== DEMO_ADMIN_PASSWORD) {
-        setAdminFeedback(`Utilisez le mot de passe demo ${DEMO_ADMIN_PASSWORD}.`);
+        setAdminFeedback("Mot de passe de configuration invalide.");
         return;
       }
 
@@ -973,7 +1064,7 @@ function AppShell() {
       setAdminMode("demo");
       writeSessionJson(ADMIN_SESSION_KEY, session);
       setAdminPassword("");
-      setAdminFeedback("Connexion demo active. Les changements restent locaux.");
+      setAdminFeedback("Acces de configuration ouvert.");
       return;
     }
 
@@ -1043,7 +1134,7 @@ function AppShell() {
 
       writeStorageJson(CONTENT_OVERRIDES_KEY, overrides);
       updateVisibleContentWithOverrides(overrides);
-      setAdminFeedback("Visuels enregistres en local pour la demo.");
+      setAdminFeedback("Visuels mis a jour.");
     } catch (error) {
       setAdminFeedback(error.message);
     } finally {
@@ -1055,7 +1146,7 @@ function AppShell() {
     setAdminSession(null);
     setAdminMode("");
     setAdminPassword("");
-    setAdminFeedback("Session admin fermee.");
+    setAdminFeedback("Session fermee.");
     removeStorageKey(ADMIN_SESSION_KEY, "session");
   }
 
@@ -1095,17 +1186,12 @@ function AppShell() {
           </NavLink>
           <NavLink to="/services">Services</NavLink>
           <NavLink to="/formations">Formations</NavLink>
+          <NavLink to="/blog">Blog</NavLink>
           <NavLink to="/tarifs">Tarifs</NavLink>
           <NavLink to="/reservation">Reservation</NavLink>
           <NavLink to="/connexion">Connexion</NavLink>
         </nav>
       </header>
-
-      {!apiAvailable ? (
-        <div className="container demo-banner">
-          Version demo statique active. Les formulaires et l'admin fonctionnent en mode local tant que le backend n'est pas deploye.
-        </div>
-      ) : null}
 
       <Routes>
         <Route
@@ -1133,6 +1219,7 @@ function AppShell() {
             />
           }
         />
+        <Route path="/blog" element={<BlogPage content={content} resolveImage={resolveImage} />} />
         <Route
           path="/tarifs"
           element={
@@ -1193,6 +1280,7 @@ function AppShell() {
         <div className="footer-links">
           <Link to="/services">Services</Link>
           <Link to="/formations">Formations</Link>
+          <Link to="/blog">Blog</Link>
           <Link to="/reservation">Reservation</Link>
           <a href={quoteWhatsappUrl} target="_blank" rel="noreferrer">
             WhatsApp
