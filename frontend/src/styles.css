@@ -12,12 +12,12 @@
   --radius: 20px;
   --shadow-soft: 0 12px 30px rgba(14, 95, 187, 0.12);
   --shadow-card: 0 20px 45px rgba(8, 67, 133, 0.14);
-  --text-sm: 0.9rem;
-  --text-base: 1.02rem;
-  --text-lg: 1.14rem;
-  --title-md: clamp(1.22rem, 1.8vw, 1.48rem);
-  --title-lg: clamp(1.7rem, 3vw, 2.24rem);
-  --title-xl: clamp(2.35rem, 4vw, 3.8rem);
+  --text-sm: 0.84rem;
+  --text-base: 0.97rem;
+  --text-lg: 1.04rem;
+  --title-md: clamp(1.08rem, 1.5vw, 1.3rem);
+  --title-lg: clamp(1.48rem, 2.4vw, 1.98rem);
+  --title-xl: clamp(1.95rem, 3.5vw, 3.1rem);
 }
 
 * {
@@ -36,8 +36,8 @@ body {
     radial-gradient(circle at 82% 18%, #d7ebff 0%, transparent 35%),
     linear-gradient(165deg, var(--bg) 0%, #f9fcff 100%);
   color: var(--text);
-  font-size: 17.5px;
-  line-height: 1.65;
+  font-size: 16.6px;
+  line-height: 1.62;
   text-rendering: optimizeLegibility;
 }
 
@@ -124,9 +124,9 @@ nav {
 
 nav a {
   color: var(--text-soft);
-  font-size: 0.96rem;
+  font-size: 0.92rem;
   font-weight: 500;
-  padding: 0.22rem 0.28rem;
+  padding: 0.18rem 0.24rem;
   border-radius: 8px;
 }
 
@@ -172,7 +172,7 @@ nav a:hover {
 .eyebrow {
   margin: 0;
   color: var(--primary-dark);
-  font-size: 0.84rem;
+  font-size: 0.78rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   font-weight: 700;
@@ -205,8 +205,8 @@ h3 {
   margin-top: 1rem;
   max-width: 66ch;
   color: var(--text-soft);
-  font-size: clamp(1.02rem, 2vw, 1.16rem);
-  line-height: 1.72;
+  font-size: clamp(0.98rem, 1.75vw, 1.08rem);
+  line-height: 1.68;
 }
 
 .hero-actions {
@@ -302,7 +302,7 @@ h3 {
 
 .metric-card h3 {
   color: var(--primary-dark);
-  font-size: 1.6rem;
+  font-size: 1.42rem;
 }
 
 .metric-card p {
@@ -321,7 +321,7 @@ h3 {
 
 .section-heading h2 {
   margin-top: 0.45rem;
-  font-size: clamp(1.6rem, 3vw, 2.4rem);
+  font-size: clamp(1.42rem, 2.5vw, 2rem);
 }
 
 .card-grid {
@@ -357,7 +357,7 @@ h3 {
 
 .audience-card h3 {
   margin-top: 0.3rem;
-  font-size: 1.08rem;
+  font-size: 1rem;
 }
 
 .audience-card p {
@@ -380,7 +380,7 @@ h3 {
 }
 
 .glass-card h3 {
-  font-size: 1.08rem;
+  font-size: 1rem;
 }
 
 .glass-card p {
@@ -425,7 +425,7 @@ h3 {
 }
 
 .faq-item h3 {
-  font-size: 1.02rem;
+  font-size: 0.96rem;
 }
 
 .faq-item p {
@@ -516,7 +516,7 @@ h3 {
 }
 
 .tool-card h3 {
-  font-size: 1rem;
+  font-size: 0.94rem;
 }
 
 .tool-role {
@@ -935,7 +935,7 @@ h3 {
 
 @media (max-width: 900px) {
   body {
-    font-size: 17px;
+    font-size: 16px;
   }
 
   .topbar {
