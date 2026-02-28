@@ -1,4 +1,4 @@
-:root {
+﻿:root {
   font-family: "Poppins", "Segoe UI", sans-serif;
   --bg: #f3f9ff;
   --bg-soft: #e6f2ff;
@@ -667,7 +667,7 @@ h1 {
   font-size: 0.92rem;
 }
 
-.senior-chat {
+.prometheus-chat {
   position: fixed;
   right: 1rem;
   bottom: 1rem;
@@ -968,7 +968,7 @@ h1 {
     justify-self: stretch;
   }
 
-  .senior-chat {
+  .prometheus-chat {
     right: 0.55rem;
     left: 0.55rem;
     justify-items: stretch;
@@ -982,3 +982,374 @@ h1 {
     width: 100%;
   }
 }
+
+.hero-grid-wide {
+  grid-template-columns: 1fr 0.95fr;
+  gap: 1.2rem;
+}
+
+.hero-media-tall {
+  min-height: 460px;
+}
+
+.hero-overlay-card {
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 1;
+  max-width: 260px;
+  padding: 0.9rem;
+  border-radius: 18px;
+  border: 1px solid rgba(201, 221, 242, 0.8);
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: var(--shadow-soft);
+}
+
+.hero-overlay-card p {
+  margin: 0.55rem 0 0.85rem;
+  color: var(--text-soft);
+  font-size: 0.92rem;
+}
+
+.hero-mini-grid {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.metric-card.compact {
+  padding: 0.9rem;
+}
+
+.service-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  padding: 1.15rem;
+  border-radius: 24px;
+  border: 1px solid #b8daf7;
+  background: linear-gradient(165deg, #ffffff 0%, #eff7ff 55%, #dbedff 100%);
+  box-shadow: var(--shadow-soft);
+}
+
+.service-card-accent {
+  background: linear-gradient(165deg, #dff0ff 0%, #ffffff 55%, #f3f9ff 100%);
+}
+
+.service-topline {
+  color: #124e80;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.service-summary {
+  margin: 0;
+  color: var(--text-soft);
+}
+
+.detail-list {
+  margin: 0;
+  padding-left: 1.1rem;
+  display: grid;
+  gap: 0.42rem;
+  color: var(--text-soft);
+}
+
+.link-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  border-radius: 999px;
+  background: #e1f0ff;
+  color: #0f5d9d;
+  border: 1px solid #b8daf7;
+  padding: 0.55rem 0.85rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.process-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.cta-banner {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 1rem;
+  align-items: center;
+  padding: 1.4rem;
+  border-radius: 28px;
+  border: 1px solid #badbfd;
+  background: linear-gradient(140deg, #d8edff 0%, #f6fbff 35%, #ffffff 100%);
+  box-shadow: var(--shadow-card);
+}
+
+.cta-banner p {
+  margin: 0.55rem 0 0;
+  color: var(--text-soft);
+}
+
+.cta-banner-actions {
+  display: grid;
+  gap: 0.8rem;
+  justify-items: start;
+}
+
+.split-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  align-items: start;
+}
+
+.split-grid-tight {
+  align-items: stretch;
+}
+
+.security-panel,
+.whatsapp-panel,
+.admin-card {
+  border-radius: 24px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: var(--shadow-soft);
+  padding: 1.2rem;
+}
+
+.security-panel p,
+.whatsapp-panel p,
+.admin-card p {
+  color: var(--text-soft);
+}
+
+.security-note {
+  margin-top: 0.9rem;
+  color: #1e578a;
+  font-weight: 500;
+}
+
+.module-stack {
+  display: grid;
+  gap: 1.2rem;
+}
+
+.training-module-card {
+  border-radius: 28px;
+  border: 1px solid #bbdcf8;
+  background: linear-gradient(170deg, #ffffff 0%, #eff8ff 62%, #e1f0ff 100%);
+  box-shadow: var(--shadow-card);
+  padding: 1.2rem;
+}
+
+.training-module-header {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 1rem;
+  align-items: start;
+}
+
+.training-module-header img {
+  width: 100%;
+  height: 100%;
+  min-height: 250px;
+  object-fit: cover;
+  border-radius: 22px;
+  border: 1px solid #c6def4;
+}
+
+.lesson-grid {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+
+.lesson-card {
+  display: grid;
+  gap: 0.65rem;
+  padding: 1rem;
+  border-radius: 20px;
+  border: 1px solid #c7def3;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.lesson-card.locked {
+  background: linear-gradient(160deg, #edf6ff 0%, #ffffff 100%);
+}
+
+.lesson-card p,
+.lesson-card strong {
+  margin: 0;
+}
+
+.lesson-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.lesson-meta span,
+.lesson-lock {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  border-radius: 999px;
+  padding: 0.28rem 0.55rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  background: #e8f3ff;
+  color: #1d4f79;
+  border: 1px solid #c4dff8;
+}
+
+.video-placeholder {
+  display: grid;
+  gap: 0.35rem;
+  min-height: 120px;
+  align-content: center;
+  justify-items: start;
+  padding: 0.9rem;
+  border-radius: 16px;
+  border: 1px dashed #9acbfb;
+  background: linear-gradient(145deg, #d8edff 0%, #f8fbff 100%);
+}
+
+.whatsapp-panel.secondary {
+  background: linear-gradient(160deg, #ffffff 0%, #f2f8ff 100%);
+}
+
+.reservation-layout {
+  grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
+}
+
+.reservation-side {
+  display: grid;
+  gap: 1rem;
+}
+
+.compact-panel {
+  padding-bottom: 1rem;
+}
+
+.admin-stack {
+  display: grid;
+  gap: 1rem;
+}
+
+.admin-card-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.admin-form {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.admin-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.admin-grid-item {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  background: rgba(7, 39, 73, 0.5);
+  padding: 1rem;
+}
+
+.modal-card {
+  width: min(560px, 100%);
+  border-radius: 24px;
+  border: 1px solid #c4dff8;
+  background: #ffffff;
+  box-shadow: 0 24px 48px rgba(7, 62, 121, 0.28);
+  padding: 1.4rem;
+}
+
+.modal-card p {
+  color: var(--text-soft);
+}
+
+.modal-meta {
+  margin: 0.9rem 0;
+}
+
+.footer-extended {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.footer-title {
+  margin: 0;
+  color: #0f4b82;
+  font-weight: 700;
+}
+
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  color: #24577f;
+  font-weight: 600;
+}
+
+@media (max-width: 1040px) {
+  .hero-mini-grid,
+  .process-grid,
+  .lesson-grid,
+  .admin-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .training-module-header {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 900px) {
+  .hero-grid-wide,
+  .split-grid,
+  .cta-banner,
+  .reservation-layout,
+  .footer-extended {
+    grid-template-columns: 1fr;
+    display: grid;
+  }
+
+  .hero-media-tall {
+    min-height: 340px;
+  }
+
+  .hero-overlay-card {
+    position: static;
+    max-width: none;
+    margin: 1rem;
+  }
+
+  .cta-banner-actions {
+    justify-items: stretch;
+  }
+
+  .admin-card-toolbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+

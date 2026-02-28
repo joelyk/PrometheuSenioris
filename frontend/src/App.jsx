@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import {
   HashRouter,
   Link,
@@ -7,17 +7,23 @@ import {
   Route,
   Routes
 } from "react-router-dom";
-import { fallbackContent } from "./fallbackContent";
 import SeniorChat from "./components/SeniorChat";
+import { fallbackContent } from "./fallbackContent";
 
 const API_BASE = import.meta.env.VITE_API_URL || "";
 const BASE_URL = import.meta.env.BASE_URL || "/";
+const ADMIN_SESSION_KEY = "prometheus-admin-session";
+const CONTENT_OVERRIDES_KEY = "prometheus-content-overrides";
+const DEMO_ADMIN_PASSWORD = "prometheus-demo";
 
 const emptyForm = {
   name: "",
   email: "",
-  goal: "",
-  plan: "athena"
+  whatsapp: "",
+  requestType: "devis",
+  service: "office",
+  preferredSlot: "asap",
+  goal: ""
 };
 
 function getApiPath(path) {
@@ -41,35 +47,183 @@ function resolveAssetPath(path) {
   return `${BASE_URL}${path}`;
 }
 
-function HomePage({ content, heroImagePath }) {
+function buildWhatsappUrl(content, message) {
+  const baseUrl = content?.brand?.whatsappBaseUrl || "https://api.whatsapp.com/send";
+  return `${baseUrl}?text=${encodeURIComponent(String(message || "").trim())}`;
+}
+
+function readStorageJson(key) {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  try {
+    const raw = window.localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : null;
+  } catch (_error) {
+    return null;
+  }
+}
+
+function readSessionJson(key) {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  try {
+    const raw = window.sessionStorage.getItem(key);
+    return raw ? JSON.parse(raw) : null;
+  } catch (_error) {
+    return null;
+  }
+}
+
+function writeStorageJson(key, value) {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  window.localStorage.setItem(key, JSON.stringify(value));
+}
+
+function writeSessionJson(key, value) {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  window.sessionStorage.setItem(key, JSON.stringify(value));
+}
+
+function removeStorageKey(key, type = "local") {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  if (type === "session") {
+    window.sessionStorage.removeItem(key);
+    return;
+  }
+
+  window.localStorage.removeItem(key);
+}
+
+function applyImageOverrides(baseContent, overrides) {
+  const content = JSON.parse(JSON.stringify(baseContent));
+  if (!overrides || typeof overrides !== "object") {
+    return content;
+  }
+
+  if (typeof overrides.heroImagePath === "string" && overrides.heroImagePath.trim()) {
+    content.hero.imagePath = overrides.heroImagePath.trim();
+  }
+
+  if (overrides.moduleImages && typeof overrides.moduleImages === "object") {
+    content.trainingModules = content.trainingModules.map((module) => ({
+      ...module,
+      imagePath:
+        typeof overrides.moduleImages[module.id] === "string" && overrides.moduleImages[module.id].trim()
+          ? overrides.moduleImages[module.id].trim()
+          : module.imagePath
+    }));
+  }
+
+  return content;
+}
+
+function createAdminDraft(content) {
+  return {
+    heroImagePath: content.hero.imagePath,
+    moduleImages: Object.fromEntries(
+      content.trainingModules.map((module) => [module.id, module.imagePath])
+    )
+  };
+}
+
+function findLabel(options, value) {
+  return options.find((item) => item.value === value)?.label || value;
+}
+
+function buildReservationMessage(content, formData) {
+  const requestTypeLabel = findLabel(fallbackContent.reservation.requestTypes, formData.requestType);
+  const serviceLabel = findLabel(fallbackContent.reservation.services, formData.service);
+  const slotLabel = findLabel(fallbackContent.reservation.slots, formData.preferredSlot);
+
+  return [
+    formData.requestType === "formation"
+      ? content.brand.paymentMessage
+      : formData.requestType === "creneau"
+      ? content.brand.bookingMessage
+      : content.brand.quoteMessage,
+    `Nom: ${formData.name || "non renseigne"}`,
+    `Email: ${formData.email || "non renseigne"}`,
+    `WhatsApp: ${formData.whatsapp || "non renseigne"}`,
+    `Type: ${requestTypeLabel}`,
+    `Service: ${serviceLabel}`,
+    `Disponibilite: ${slotLabel}`,
+    `Besoin: ${formData.goal || "non renseigne"}`
+  ].join("\n");
+}
+function HomePage({ bookingWhatsappUrl, content, quoteWhatsappUrl, resolveImage }) {
   return (
     <main className="route-page">
       <section className="container hero">
-        <div className="hero-grid">
+        <div className="hero-grid hero-grid-wide">
           <div>
             <p className="eyebrow">{content.brand.promise}</p>
             <h1>{content.hero.headline}</h1>
             <p className="hero-copy">{content.hero.subheadline}</p>
             <div className="hero-actions">
-              <Link to="/offres" className="btn btn-primary">
+              <Link to="/reservation" className="btn btn-primary">
                 {content.hero.ctaPrimary}
               </Link>
-              <Link to="/contact" className="btn btn-outline">
+              <a href={bookingWhatsappUrl} className="btn btn-outline" target="_blank" rel="noreferrer">
                 {content.hero.ctaSecondary}
-              </Link>
+              </a>
+            </div>
+            <div className="hero-mini-grid">
+              {content.hero.metrics.map((item) => (
+                <article key={item.label} className="metric-card compact">
+                  <h3>{item.value}</h3>
+                  <p>{item.label}</p>
+                </article>
+              ))}
             </div>
           </div>
-          <aside className="hero-media">
-            <img src={heroImagePath} alt={content.hero.imageAlt} loading="lazy" />
-            <p className="hero-media-chip">Coaching humain + pratique concrete</p>
+
+          <aside className="hero-media hero-media-tall">
+            <img src={resolveImage(content.hero.imagePath)} alt={content.hero.imageAlt} loading="lazy" />
+            <div className="hero-overlay-card">
+              <strong>Le parcours est clair</strong>
+              <p>Confier une tache, demander un devis, reserver un creneau ou debloquer une formation.</p>
+              <a href={quoteWhatsappUrl} className="link-button" target="_blank" rel="noreferrer">
+                Continuer sur WhatsApp
+              </a>
+            </div>
           </aside>
         </div>
+      </section>
 
-        <div className="metric-grid">
-          {content.hero.metrics.map((item) => (
-            <article key={item.label} className="metric-card">
-              <h3>{item.value}</h3>
-              <p>{item.label}</p>
+      <section className="container section">
+        <div className="section-heading">
+          <p className="eyebrow">Services</p>
+          <h2>Ce que Prometheus prend en charge</h2>
+          <p className="hero-copy">
+            Le site est ouvert a tous. L'offre couvre l'execution, la correction et la formation sur des besoins numeriques concrets.
+          </p>
+        </div>
+        <div className="card-grid four">
+          {content.serviceCategories.map((category) => (
+            <article key={category.id} className="service-card">
+              <div className="service-topline">{category.title}</div>
+              <p className="service-summary">{category.summary}</p>
+              <ul className="detail-list">
+                {category.items.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+              <Link to="/reservation" className="link-button">
+                {category.cta}
+              </Link>
             </article>
           ))}
         </div>
@@ -77,10 +231,10 @@ function HomePage({ content, heroImagePath }) {
 
       <section className="container section">
         <div className="section-heading">
-          <p className="eyebrow">Pour qui</p>
-          <h2>Un parcours utile pour la maison, les projets et l'entreprise</h2>
+          <p className="eyebrow">Publics</p>
+          <h2>Un accompagnement pour tous les profils</h2>
         </div>
-        <div className="card-grid three">
+        <div className="card-grid four">
           {content.audiences.map((audience) => (
             <article key={audience.title} className="audience-card">
               <p className="audience-kicker">Profil</p>
@@ -94,23 +248,42 @@ function HomePage({ content, heroImagePath }) {
 
       <section className="container section">
         <div className="section-heading">
-          <p className="eyebrow">Pourquoi Prometheus</p>
-          <h2>Un accompagnement numerique pense pour les seniors</h2>
+          <p className="eyebrow">Process</p>
+          <h2>Comment une demande est traitee</h2>
         </div>
-        <div className="card-grid three">
-          {content.pillars.map((pillar) => (
-            <article key={pillar.title} className="glass-card">
-              <h3>{pillar.title}</h3>
-              <p>{pillar.description}</p>
+        <div className="timeline process-grid">
+          {content.workflow.map((step) => (
+            <article key={step.step} className="timeline-item">
+              <span>{step.step}</span>
+              <h3>{step.title}</h3>
+              <p>{step.detail}</p>
             </article>
           ))}
         </div>
       </section>
 
       <section className="container section">
+        <div className="cta-banner">
+          <div>
+            <p className="eyebrow">Confidentialite</p>
+            <h2>{content.security.title}</h2>
+            <p>{content.security.intro}</p>
+          </div>
+          <div className="cta-banner-actions">
+            <Link to="/reservation" className="btn btn-primary">
+              Envoyer un besoin
+            </Link>
+            <a href={quoteWhatsappUrl} className="btn btn-outline" target="_blank" rel="noreferrer">
+              Devis sur WhatsApp
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <section className="container section contact-section">
         <div className="section-heading">
-          <p className="eyebrow">Temoignages</p>
-          <h2>Des resultats concrets, semaine apres semaine</h2>
+          <p className="eyebrow">Retours</p>
+          <h2>Des demandes bien cadrees et des livrables utiles</h2>
         </div>
         <div className="card-grid three">
           {content.testimonials.map((review) => (
@@ -123,93 +296,43 @@ function HomePage({ content, heroImagePath }) {
           ))}
         </div>
       </section>
-
-      <section className="container section contact-section">
-        <div className="section-heading">
-          <p className="eyebrow">Questions frequentes</p>
-          <h2>Les reponses essentielles avant de commencer</h2>
-        </div>
-        <div className="faq-list">
-          {content.faq.map((item) => (
-            <article key={item.question} className="faq-item">
-              <h3>{item.question}</h3>
-              <p>{item.answer}</p>
-            </article>
-          ))}
-        </div>
-      </section>
     </main>
   );
 }
 
-function TrainingsPage({ content }) {
+function ServicesPage({ content, quoteWhatsappUrl }) {
   return (
     <main className="route-page">
       <section className="container hero page-intro">
-        <p className="eyebrow">Formations</p>
-        <h1>Formations de base: Excel, Word, PowerPoint</h1>
+        <p className="eyebrow">Services</p>
+        <h1>Accompagnement informatique, documents, IA et productivite</h1>
         <p className="hero-copy">
-          Des parcours concrets pour progresser rapidement, avec une approche simple
-          et rassurante.
+          Ici, le coeur de l'offre est clair: resoudre une tache, remettre un support au propre, apprendre un outil, ou structurer un projet documentaire.
         </p>
       </section>
 
       <section className="container section">
-        <div className="section-heading">
-          <p className="eyebrow">Parcours 7 jours</p>
-          <h2>Une progression claire, jour par jour</h2>
-        </div>
-        <div className="timeline">
-          {content.weeklyPath.map((step) => (
-            <article key={step.day} className="timeline-item">
-              <span>{step.day}</span>
-              <h3>{step.focus}</h3>
-              <p>{step.detail}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="container section contact-section">
-        <div className="section-heading">
-          <p className="eyebrow">Formations de base</p>
-          <h2>Choisissez votre module principal</h2>
-        </div>
-        <div className="card-grid three">
-          {content.coreTrainings.map((training) => (
-            <article key={training.id} className="training-card">
-              <h3>{training.title}</h3>
-              <p className="training-meta">
-                {training.level} - {training.duration}
-              </p>
-              <p className="training-price">{training.price}</p>
-              <ul>
-                {training.points.map((point) => (
-                  <li key={point}>{point}</li>
+        <div className="card-grid four">
+          {content.serviceCategories.map((category) => (
+            <article key={category.id} className="service-card service-card-accent">
+              <div className="service-topline">{category.title}</div>
+              <p className="service-summary">{category.summary}</p>
+              <ul className="detail-list">
+                {category.items.map((item) => (
+                  <li key={item}>{item}</li>
                 ))}
               </ul>
             </article>
           ))}
         </div>
       </section>
-    </main>
-  );
-}
 
-function AiToolsPage({ content }) {
-  return (
-    <main className="route-page">
-      <section className="container hero page-intro">
-        <p className="eyebrow">Outils IA</p>
-        <h1>Apprendre les bons outils IA pour le quotidien et l'entreprise</h1>
-        <p className="hero-copy">
-          Nous vous montrons comment utiliser l'IA en restant simple, utile et
-          verifiable.
-        </p>
-      </section>
-
-      <section className="container section contact-section">
-        <div className="card-grid four">
+      <section className="container section">
+        <div className="section-heading">
+          <p className="eyebrow">Outils IA</p>
+          <h2>Les outils que Prometheus peut vous apprendre a utiliser utilement</h2>
+        </div>
+        <div className="card-grid three">
           {content.aiTools.map((tool) => (
             <article key={tool.name} className="tool-card">
               <h3>{tool.name}</h3>
@@ -219,27 +342,143 @@ function AiToolsPage({ content }) {
           ))}
         </div>
       </section>
+
+      <section className="container section contact-section">
+        <div className="split-grid">
+          <article className="security-panel">
+            <p className="eyebrow">Securite</p>
+            <h2>{content.security.title}</h2>
+            <p>{content.security.intro}</p>
+            <ul className="detail-list">
+              {content.security.commitments.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+            <p className="security-note">{content.security.note}</p>
+          </article>
+
+          <article className="vision-panel">
+            <p className="eyebrow">Extension entreprise</p>
+            <h2>{content.enterprise.title}</h2>
+            <p>{content.enterprise.text}</p>
+            <div className="vision-list">
+              {content.enterprise.bullets.map((bullet) => (
+                <p key={bullet}>{bullet}</p>
+              ))}
+            </div>
+            <a href={quoteWhatsappUrl} className="btn btn-outline" target="_blank" rel="noreferrer">
+              Discuter d'un besoin equipe
+            </a>
+          </article>
+        </div>
+      </section>
     </main>
   );
 }
+function LessonCard({ lesson, onUnlock }) {
+  if (lesson.locked) {
+    return (
+      <article className="lesson-card locked">
+        <div className="lesson-lock">Cadenas</div>
+        <strong>{lesson.title}</strong>
+        <p>{lesson.summary}</p>
+        <div className="lesson-meta">
+          <span>{lesson.type}</span>
+          <span>{lesson.duration}</span>
+        </div>
+        <button type="button" className="btn btn-primary" onClick={onUnlock}>
+          Debloquer ce module
+        </button>
+      </article>
+    );
+  }
 
-function PricingPage({ content }) {
+  return (
+    <article className="lesson-card">
+      <div className="lesson-meta">
+        <span>{lesson.type}</span>
+        <span>{lesson.duration}</span>
+      </div>
+      <strong>{lesson.title}</strong>
+      <p>{lesson.summary}</p>
+      {lesson.type === "Video" ? (
+        <div className="video-placeholder">
+          <span>Video preview</span>
+          <strong>Capsule accessible dans l'apercu gratuit</strong>
+        </div>
+      ) : null}
+    </article>
+  );
+}
+
+function TrainingsPage({ content, onUnlockLesson, resolveImage }) {
   return (
     <main className="route-page">
       <section className="container hero page-intro">
-        <p className="eyebrow">Tarifs en euros</p>
-        <h1>Choisissez la formule qui correspond a votre rythme</h1>
+        <p className="eyebrow">Formations</p>
+        <h1>Formations personnalisees avec apercu gratuit et contenus premium</h1>
         <p className="hero-copy">
-          De la decouverte gratuite a l'accompagnement premium, tout est pense pour
-          avancer sans stress.
+          Chaque parcours montre une partie du contenu en libre consultation. Les exercices corriges, capsules complementaires et retours personnalises se debloquent ensuite.
         </p>
       </section>
 
       <section className="container section contact-section">
+        <div className="module-stack">
+          {content.trainingModules.map((module) => (
+            <article key={module.id} className="training-module-card">
+              <div className="training-module-header">
+                <img src={resolveImage(module.imagePath)} alt={module.title} loading="lazy" />
+                <div>
+                  <p className="eyebrow">{module.format}</p>
+                  <h2>{module.title}</h2>
+                  <p className="training-meta">
+                    {module.level} - {module.duration} - {module.price}
+                  </p>
+                  <p className="service-summary">{module.summary}</p>
+                  <ul className="detail-list">
+                    {module.outcomes.map((item) => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
+                  <Link to="/reservation" className="btn btn-outline">
+                    Reserver une formation sur ce module
+                  </Link>
+                </div>
+              </div>
+
+              <div className="lesson-grid">
+                {module.lessons.map((lesson) => (
+                  <LessonCard
+                    key={lesson.id}
+                    lesson={lesson}
+                    onUnlock={() => onUnlockLesson({ module, lesson })}
+                  />
+                ))}
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+    </main>
+  );
+}
+
+function PricingPage({ bookingWhatsappUrl, content, quoteWhatsappUrl }) {
+  return (
+    <main className="route-page">
+      <section className="container hero page-intro">
+        <p className="eyebrow">Tarifs</p>
+        <h1>Des formules lisibles selon le type d'aide attendu</h1>
+        <p className="hero-copy">
+          Diagnostic, mission ciblee ou formation personnalisee: le site clarifie ce que vous achetez et comment la suite se passe.
+        </p>
+      </section>
+
+      <section className="container section">
         <div className="card-grid three">
           {content.pricing.map((plan) => (
             <article key={plan.id} className={`pricing-card ${plan.highlight ? "featured" : ""}`}>
-              {plan.highlight ? <span className="badge">Le plus choisi</span> : null}
+              {plan.highlight ? <span className="badge">Le plus direct</span> : null}
               <h3>{plan.name}</h3>
               <p className="price">
                 {plan.price}
@@ -251,156 +490,363 @@ function PricingPage({ content }) {
                   <li key={feature}>{feature}</li>
                 ))}
               </ul>
-              <Link to="/contact" className={plan.highlight ? "btn btn-primary" : "btn btn-outline"}>
+              <Link to="/reservation" className={plan.highlight ? "btn btn-primary" : "btn btn-outline"}>
                 {plan.cta}
               </Link>
             </article>
           ))}
         </div>
       </section>
-    </main>
-  );
-}
-
-function VisionPage({ content }) {
-  return (
-    <main className="route-page">
-      <section className="container hero page-intro">
-        <p className="eyebrow">Vision SaaS</p>
-        <h1>Prometheus evolue vers une solution entreprise</h1>
-        <p className="hero-copy">
-          Notre ambition: rendre les equipes plus autonomes sur les logiciels et
-          accelerer l'adoption numerique.
-        </p>
-      </section>
 
       <section className="container section contact-section">
-        <article className="vision-panel">
-          <p className="eyebrow">Prometheus demain</p>
-          <h2>{content.enterprise.title}</h2>
-          <p>{content.enterprise.text}</p>
-          <div className="vision-list">
-            {content.enterprise.bullets.map((bullet) => (
-              <p key={bullet}>{bullet}</p>
-            ))}
-          </div>
-        </article>
+        <div className="split-grid split-grid-tight">
+          <article className="whatsapp-panel">
+            <p className="eyebrow">Devis</p>
+            <h2>Besoin d'une estimation avant de lancer la mission</h2>
+            <p>Le devis sert a cadrer l'objectif, le livrable, le delai et le bon format d'accompagnement.</p>
+            <a href={quoteWhatsappUrl} className="btn btn-primary" target="_blank" rel="noreferrer">
+              Demander un devis sur WhatsApp
+            </a>
+          </article>
+          <article className="whatsapp-panel secondary">
+            <p className="eyebrow">Reservation</p>
+            <h2>Besoin d'un creneau de travail ou de formation</h2>
+            <p>Choisissez un moment, puis finalisez les details pratiques et le paiement sur WhatsApp.</p>
+            <a href={bookingWhatsappUrl} className="btn btn-outline" target="_blank" rel="noreferrer">
+              Reserver un creneau sur WhatsApp
+            </a>
+          </article>
+        </div>
       </section>
     </main>
   );
 }
-
-function ContactPage({
+function ReservationPage({
   apiAvailable,
   content,
   feedback,
   formData,
   handleSubmit,
-  pricingOptions,
+  nextWhatsappUrl,
   sending,
   setFormData
 }) {
   return (
     <main className="route-page">
       <section className="container hero page-intro">
-        <p className="eyebrow">Demande de rappel</p>
-        <h1>Parlons de votre progression numerique</h1>
+        <p className="eyebrow">Reservation et devis</p>
+        <h1>Expliquez le besoin, puis poursuivez sur WhatsApp</h1>
         <p className="hero-copy">
-          Un conseiller vous aide a choisir la meilleure formule selon votre objectif.
+          Le formulaire sert a cadrer proprement la demande. Ensuite, Prometheus vous redirige vers WhatsApp pour finaliser les details et le paiement si necessaire.
         </p>
       </section>
 
       <section className="container section contact-section">
-        <form className="contact-form" onSubmit={handleSubmit}>
-          <label htmlFor="name">Nom</label>
-          <input
-            id="name"
-            name="name"
-            value={formData.name}
-            onChange={(event) => setFormData((prev) => ({ ...prev, name: event.target.value }))}
-            placeholder="Votre nom"
-            required
-          />
+        <div className="split-grid reservation-layout">
+          <form className="contact-form" onSubmit={handleSubmit}>
+            <label htmlFor="name">Nom</label>
+            <input
+              id="name"
+              name="name"
+              value={formData.name}
+              onChange={(event) => setFormData((prev) => ({ ...prev, name: event.target.value }))}
+              placeholder="Votre nom"
+              required
+            />
 
-          <label htmlFor="email">Email</label>
-          <input
-            id="email"
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={(event) => setFormData((prev) => ({ ...prev, email: event.target.value }))}
-            placeholder="votre@email.com"
-            required
-          />
+            <label htmlFor="email">Email</label>
+            <input
+              id="email"
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={(event) => setFormData((prev) => ({ ...prev, email: event.target.value }))}
+              placeholder="vous@exemple.com"
+              required
+            />
 
-          <label htmlFor="plan">Offre souhaitee</label>
-          <select
-            id="plan"
-            name="plan"
-            value={formData.plan}
-            onChange={(event) => setFormData((prev) => ({ ...prev, plan: event.target.value }))}
-          >
-            {pricingOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
+            <label htmlFor="whatsapp">Numero WhatsApp ou telephone</label>
+            <input
+              id="whatsapp"
+              name="whatsapp"
+              value={formData.whatsapp}
+              onChange={(event) => setFormData((prev) => ({ ...prev, whatsapp: event.target.value }))}
+              placeholder="Ex: +33 ..."
+            />
 
-          <label htmlFor="goal">Votre objectif</label>
-          <textarea
-            id="goal"
-            name="goal"
-            rows={5}
-            value={formData.goal}
-            onChange={(event) => setFormData((prev) => ({ ...prev, goal: event.target.value }))}
-            placeholder="Ex: devenir autonome sur Excel et comprendre ChatGPT."
-            required
-          />
+            <label htmlFor="requestType">Type de demande</label>
+            <select
+              id="requestType"
+              name="requestType"
+              value={formData.requestType}
+              onChange={(event) => setFormData((prev) => ({ ...prev, requestType: event.target.value }))}
+            >
+              {content.reservation.requestTypes.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
 
-          <button type="submit" className="btn btn-primary" disabled={sending}>
-            {sending ? "Envoi en cours..." : "Envoyer ma demande"}
-          </button>
+            <label htmlFor="service">Service concerne</label>
+            <select
+              id="service"
+              name="service"
+              value={formData.service}
+              onChange={(event) => setFormData((prev) => ({ ...prev, service: event.target.value }))}
+            >
+              {content.reservation.services.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
 
-          {feedback ? <p className="feedback">{feedback}</p> : null}
-          {!apiAvailable ? (
-            <p className="feedback">
-              Mode demo GitHub Pages: le formulaire est informatif. Activez le backend
-              pour traiter les demandes.
-            </p>
-          ) : null}
-        </form>
+            <label htmlFor="preferredSlot">Disponibilite</label>
+            <select
+              id="preferredSlot"
+              name="preferredSlot"
+              value={formData.preferredSlot}
+              onChange={(event) => setFormData((prev) => ({ ...prev, preferredSlot: event.target.value }))}
+            >
+              {content.reservation.slots.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
 
-        <div className="section-heading">
-          <p className="eyebrow">Pourquoi nous contacter</p>
-          <h2>Un plan clair avant de commencer</h2>
-          <p className="hero-copy">
-            Vous recevez une recommandation de parcours sur mesure selon votre niveau
-            et vos besoins (maison ou entreprise).
-          </p>
-        </div>
+            <label htmlFor="goal">Votre besoin</label>
+            <textarea
+              id="goal"
+              name="goal"
+              rows={6}
+              value={formData.goal}
+              onChange={(event) => setFormData((prev) => ({ ...prev, goal: event.target.value }))}
+              placeholder="Ex: corriger un memoire, refaire un CV, resoudre un tableau Excel, comprendre ChatGPT..."
+              required
+            />
 
-        <div className="card-grid three">
-          {content.audiences.map((audience) => (
-            <article key={audience.title} className="glass-card">
-              <h3>{audience.title}</h3>
-              <p>{audience.benefit}</p>
+            <button type="submit" className="btn btn-primary" disabled={sending}>
+              {sending ? "Envoi en cours..." : "Envoyer ma demande"}
+            </button>
+
+            {feedback ? <p className="feedback">{feedback}</p> : null}
+            {!apiAvailable ? (
+              <p className="feedback">
+                Mode demo: la demande n'est pas sauvegardee cote serveur, mais vous pouvez continuer vers WhatsApp.
+              </p>
+            ) : null}
+
+            {nextWhatsappUrl ? (
+              <a href={nextWhatsappUrl} className="btn btn-outline" target="_blank" rel="noreferrer">
+                Continuer sur WhatsApp
+              </a>
+            ) : null}
+          </form>
+
+          <div className="reservation-side">
+            <article className="glass-card">
+              <p className="eyebrow">Checklist</p>
+              <h2>Ce qu'il faut preciser pour aller vite</h2>
+              <ul className="detail-list">
+                {content.reservation.checklist.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
             </article>
-          ))}
+
+            <article className="security-panel compact-panel">
+              <p className="eyebrow">Protection</p>
+              <h2>{content.security.title}</h2>
+              <ul className="detail-list">
+                {content.security.commitments.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+              <p className="security-note">{content.security.note}</p>
+            </article>
+          </div>
         </div>
       </section>
     </main>
   );
 }
 
-function App() {
+function AdminPage({
+  adminFeedback,
+  adminLoading,
+  adminMode,
+  adminPassword,
+  adminSaving,
+  content,
+  handleAdminFieldChange,
+  handleAdminLogin,
+  handleAdminSave,
+  handleAdminLogout,
+  isAdmin,
+  isRemoteAdminAvailable,
+  setAdminPassword
+}) {
+  const [draft, setDraft] = useState(() => createAdminDraft(content));
+
+  useEffect(() => {
+    setDraft(createAdminDraft(content));
+  }, [content]);
+
+  function updateHeroImage(value) {
+    setDraft((prev) => ({ ...prev, heroImagePath: value }));
+  }
+
+  function updateModuleImage(moduleId, value) {
+    setDraft((prev) => ({
+      ...prev,
+      moduleImages: {
+        ...prev.moduleImages,
+        [moduleId]: value
+      }
+    }));
+  }
+
+  function submitSave(event) {
+    event.preventDefault();
+    handleAdminFieldChange(draft);
+    handleAdminSave(draft);
+  }
+
+  return (
+    <main className="route-page">
+      <section className="container hero page-intro">
+        <p className="eyebrow">Connexion</p>
+        <h1>Espace administrateur pour gerer les visuels des formations</h1>
+        <p className="hero-copy">
+          Cette zone sert a modifier l'image hero et les images des modules. Si le backend admin est configure, les changements sont persistants. Sinon, ils restent en mode demo local.
+        </p>
+      </section>
+
+      <section className="container section contact-section">
+        {!isAdmin ? (
+          <div className="admin-card">
+            <p className="eyebrow">Authentification</p>
+            <h2>{isRemoteAdminAvailable ? "Connexion admin backend" : "Connexion demo locale"}</h2>
+            <p>
+              {isRemoteAdminAvailable
+                ? "Entrez la cle admin configuree sur le backend pour recevoir une session signee."
+                : `Le backend admin n'est pas disponible. Utilisez le mot de passe demo ${DEMO_ADMIN_PASSWORD} pour previsualiser les changements localement.`}
+            </p>
+            <form className="contact-form admin-login-form" onSubmit={handleAdminLogin}>
+              <label htmlFor="adminPassword">Mot de passe admin</label>
+              <input
+                id="adminPassword"
+                type="password"
+                value={adminPassword}
+                onChange={(event) => setAdminPassword(event.target.value)}
+                placeholder="Mot de passe admin"
+                required
+              />
+              <button type="submit" className="btn btn-primary" disabled={adminLoading}>
+                {adminLoading ? "Connexion..." : "Se connecter"}
+              </button>
+              {adminFeedback ? <p className="feedback">{adminFeedback}</p> : null}
+            </form>
+          </div>
+        ) : (
+          <div className="admin-stack">
+            <div className="admin-card admin-card-toolbar">
+              <div>
+                <p className="eyebrow">Session active</p>
+                <h2>Mode {adminMode === "remote" ? "backend" : "demo local"}</h2>
+              </div>
+              <button type="button" className="btn btn-outline" onClick={handleAdminLogout}>
+                Se deconnecter
+              </button>
+            </div>
+
+            <form className="admin-card admin-form" onSubmit={submitSave}>
+              <label htmlFor="heroImagePath">Image hero</label>
+              <input
+                id="heroImagePath"
+                value={draft.heroImagePath}
+                onChange={(event) => updateHeroImage(event.target.value)}
+                placeholder="/images/pexels-fauxels-3184291.jpg"
+              />
+
+              <div className="admin-grid">
+                {content.trainingModules.map((module) => (
+                  <div key={module.id} className="admin-grid-item">
+                    <label htmlFor={`module-${module.id}`}>{module.title}</label>
+                    <input
+                      id={`module-${module.id}`}
+                      value={draft.moduleImages[module.id] || ""}
+                      onChange={(event) => updateModuleImage(module.id, event.target.value)}
+                      placeholder="/images/..."
+                    />
+                  </div>
+                ))}
+              </div>
+
+              <button type="submit" className="btn btn-primary" disabled={adminSaving}>
+                {adminSaving ? "Enregistrement..." : "Enregistrer les visuels"}
+              </button>
+              {adminFeedback ? <p className="feedback">{adminFeedback}</p> : null}
+            </form>
+          </div>
+        )}
+      </section>
+    </main>
+  );
+}
+
+function LockedLessonModal({ bookingWhatsappUrl, item, onClose }) {
+  if (!item) {
+    return null;
+  }
+
+  return (
+    <div className="modal-backdrop" role="presentation" onClick={onClose}>
+      <div className="modal-card" role="dialog" aria-modal="true" onClick={(event) => event.stopPropagation()}>
+        <p className="eyebrow">Contenu premium</p>
+        <h2>{item.lesson.title}</h2>
+        <p>{item.lesson.summary}</p>
+        <div className="lesson-meta modal-meta">
+          <span>{item.module.title}</span>
+          <span>{item.lesson.duration}</span>
+        </div>
+        <p>
+          Ce contenu complet est reserve aux personnes qui prennent la formation ou demandent l'acces payant. La suite se finalise sur WhatsApp.
+        </p>
+        <div className="hero-actions">
+          <Link to="/reservation" className="btn btn-primary" onClick={onClose}>
+            Demander l'acces
+          </Link>
+          <a href={bookingWhatsappUrl} className="btn btn-outline" target="_blank" rel="noreferrer">
+            Poursuivre sur WhatsApp
+          </a>
+          <button type="button" className="btn btn-outline" onClick={onClose}>
+            Fermer
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function AppShell() {
   const [content, setContent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [formData, setFormData] = useState(emptyForm);
   const [sending, setSending] = useState(false);
   const [feedback, setFeedback] = useState("");
+  const [nextWhatsappUrl, setNextWhatsappUrl] = useState("");
   const [apiAvailable, setApiAvailable] = useState(true);
+  const [lockedItem, setLockedItem] = useState(null);
+  const [adminPassword, setAdminPassword] = useState("");
+  const [adminFeedback, setAdminFeedback] = useState("");
+  const [adminLoading, setAdminLoading] = useState(false);
+  const [adminSaving, setAdminSaving] = useState(false);
+  const [adminSession, setAdminSession] = useState(() => readSessionJson(ADMIN_SESSION_KEY));
+  const [adminMode, setAdminMode] = useState(() => readSessionJson(ADMIN_SESSION_KEY)?.mode || "");
   const isGithubPagesDemo =
     typeof window !== "undefined" &&
     window.location.hostname.endsWith("github.io") &&
@@ -410,9 +856,11 @@ function App() {
     const controller = new AbortController();
 
     async function loadContent() {
+      const localOverrides = readStorageJson(CONTENT_OVERRIDES_KEY) || {};
+
       if (isGithubPagesDemo) {
         setApiAvailable(false);
-        setContent(fallbackContent);
+        setContent(applyImageOverrides(fallbackContent, localOverrides));
         setLoading(false);
         return;
       }
@@ -425,7 +873,7 @@ function App() {
         });
 
         if (!response.ok) {
-          throw new Error("Impossible de charger les donnees de la page.");
+          throw new Error("Impossible de charger les donnees du site.");
         }
 
         const data = await response.json();
@@ -434,7 +882,7 @@ function App() {
       } catch (err) {
         if (err.name !== "AbortError") {
           setApiAvailable(false);
-          setContent(fallbackContent);
+          setContent(applyImageOverrides(fallbackContent, localOverrides));
           setError("");
         }
       } finally {
@@ -447,27 +895,35 @@ function App() {
     return () => controller.abort();
   }, [isGithubPagesDemo]);
 
-  const pricingOptions = useMemo(
-    () =>
-      content?.pricing?.map((plan) => ({
-        value: plan.id,
-        label: `${plan.name} (${plan.price})`
-      })) || [],
-    [content]
+  const activeContent = content || fallbackContent;
+  const bookingWhatsappUrl = useMemo(
+    () => buildWhatsappUrl(activeContent, activeContent.brand.bookingMessage),
+    [activeContent]
   );
+  const quoteWhatsappUrl = useMemo(
+    () => buildWhatsappUrl(activeContent, activeContent.brand.quoteMessage),
+    [activeContent]
+  );
+  const isAdmin = Boolean(adminSession?.token || adminSession?.mode === "demo");
+  const isRemoteAdminAvailable = apiAvailable && !isGithubPagesDemo;
 
-  const heroImagePath = useMemo(
-    () => resolveAssetPath(content?.hero?.imagePath || fallbackContent.hero.imagePath),
-    [content]
-  );
+  function resolveImage(path) {
+    return resolveAssetPath(path);
+  }
+
+  function updateVisibleContentWithOverrides(overrides) {
+    setContent((prev) => applyImageOverrides(prev || fallbackContent, overrides));
+  }
 
   async function handleSubmit(event) {
     event.preventDefault();
 
+    const whatsappMessage = buildReservationMessage(activeContent, formData);
+    const whatsappUrl = buildWhatsappUrl(activeContent, whatsappMessage);
+
     if (!apiAvailable) {
-      setFeedback(
-        "Mode demo GitHub Pages: le formulaire est desactive. Utilisez la version complete avec backend."
-      );
+      setFeedback("Mode demo: la demande reste locale. Vous pouvez poursuivre sur WhatsApp.");
+      setNextWhatsappUrl(whatsappUrl);
       return;
     }
 
@@ -481,7 +937,6 @@ function App() {
         },
         body: JSON.stringify(formData)
       });
-
       const result = await response.json();
 
       if (!response.ok) {
@@ -489,6 +944,7 @@ function App() {
       }
 
       setFeedback(result.message);
+      setNextWhatsappUrl(result.whatsappUrl || whatsappUrl);
       setFormData(emptyForm);
     } catch (err) {
       setFeedback(err.message);
@@ -497,11 +953,117 @@ function App() {
     }
   }
 
+  async function handleAdminLogin(event) {
+    event.preventDefault();
+    setAdminFeedback("");
+
+    if (!adminPassword.trim()) {
+      setAdminFeedback("Mot de passe requis.");
+      return;
+    }
+
+    if (!isRemoteAdminAvailable) {
+      if (adminPassword.trim() !== DEMO_ADMIN_PASSWORD) {
+        setAdminFeedback(`Utilisez le mot de passe demo ${DEMO_ADMIN_PASSWORD}.`);
+        return;
+      }
+
+      const session = { token: "demo", mode: "demo" };
+      setAdminSession(session);
+      setAdminMode("demo");
+      writeSessionJson(ADMIN_SESSION_KEY, session);
+      setAdminPassword("");
+      setAdminFeedback("Connexion demo active. Les changements restent locaux.");
+      return;
+    }
+
+    try {
+      setAdminLoading(true);
+      const response = await fetch(getApiPath("/api/admin/login"), {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ password: adminPassword.trim() })
+      });
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Connexion admin impossible.");
+      }
+
+      const session = {
+        token: result.token,
+        mode: "remote",
+        expiresAt: result.expiresAt || ""
+      };
+      setAdminSession(session);
+      setAdminMode("remote");
+      writeSessionJson(ADMIN_SESSION_KEY, session);
+      setAdminPassword("");
+      setAdminFeedback("Connexion admin reussie.");
+    } catch (error) {
+      setAdminFeedback(error.message);
+    } finally {
+      setAdminLoading(false);
+    }
+  }
+
+  function handleAdminFieldChange(_draft) {
+    setAdminFeedback("");
+  }
+
+  async function handleAdminSave(draft) {
+    const overrides = {
+      heroImagePath: draft.heroImagePath,
+      moduleImages: draft.moduleImages
+    };
+
+    try {
+      setAdminSaving(true);
+      if (adminMode === "remote" && adminSession?.token) {
+        const response = await fetch(getApiPath("/api/admin/content"), {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${adminSession.token}`
+          },
+          body: JSON.stringify(overrides)
+        });
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result.message || "Enregistrement impossible.");
+        }
+
+        setContent(result.content);
+        setAdminFeedback("Visuels enregistres sur le backend.");
+        return;
+      }
+
+      writeStorageJson(CONTENT_OVERRIDES_KEY, overrides);
+      updateVisibleContentWithOverrides(overrides);
+      setAdminFeedback("Visuels enregistres en local pour la demo.");
+    } catch (error) {
+      setAdminFeedback(error.message);
+    } finally {
+      setAdminSaving(false);
+    }
+  }
+
+  function handleAdminLogout() {
+    setAdminSession(null);
+    setAdminMode("");
+    setAdminPassword("");
+    setAdminFeedback("Session admin fermee.");
+    removeStorageKey(ADMIN_SESSION_KEY, "session");
+  }
+
   if (loading) {
     return (
       <main className="app-shell loading-state">
         <div className="loader" />
-        <p>Chargement de Prometheus Senioris...</p>
+        <p>Chargement de Prometheus...</p>
       </main>
     );
   }
@@ -518,68 +1080,136 @@ function App() {
   }
 
   return (
+    <div className="app-shell">
+      <div className="background-glow background-glow-a" />
+      <div className="background-glow background-glow-b" />
+
+      <header className="container topbar">
+        <Link to="/" className="brand">
+          <span className="brand-mark">{content.brand.greekSignature}</span>
+          <strong>{content.brand.name}</strong>
+        </Link>
+        <nav className="main-nav">
+          <NavLink to="/" end>
+            Accueil
+          </NavLink>
+          <NavLink to="/services">Services</NavLink>
+          <NavLink to="/formations">Formations</NavLink>
+          <NavLink to="/tarifs">Tarifs</NavLink>
+          <NavLink to="/reservation">Reservation</NavLink>
+          <NavLink to="/connexion">Connexion</NavLink>
+        </nav>
+      </header>
+
+      {!apiAvailable ? (
+        <div className="container demo-banner">
+          Version demo statique active. Les formulaires et l'admin fonctionnent en mode local tant que le backend n'est pas deploye.
+        </div>
+      ) : null}
+
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <HomePage
+              bookingWhatsappUrl={bookingWhatsappUrl}
+              content={content}
+              quoteWhatsappUrl={quoteWhatsappUrl}
+              resolveImage={resolveImage}
+            />
+          }
+        />
+        <Route
+          path="/services"
+          element={<ServicesPage content={content} quoteWhatsappUrl={quoteWhatsappUrl} />}
+        />
+        <Route
+          path="/formations"
+          element={
+            <TrainingsPage
+              content={content}
+              onUnlockLesson={setLockedItem}
+              resolveImage={resolveImage}
+            />
+          }
+        />
+        <Route
+          path="/tarifs"
+          element={
+            <PricingPage
+              bookingWhatsappUrl={bookingWhatsappUrl}
+              content={content}
+              quoteWhatsappUrl={quoteWhatsappUrl}
+            />
+          }
+        />
+        <Route
+          path="/reservation"
+          element={
+            <ReservationPage
+              apiAvailable={apiAvailable}
+              content={content}
+              feedback={feedback}
+              formData={formData}
+              handleSubmit={handleSubmit}
+              nextWhatsappUrl={nextWhatsappUrl}
+              sending={sending}
+              setFormData={setFormData}
+            />
+          }
+        />
+        <Route
+          path="/connexion"
+          element={
+            <AdminPage
+              adminFeedback={adminFeedback}
+              adminLoading={adminLoading}
+              adminMode={adminMode}
+              adminPassword={adminPassword}
+              adminSaving={adminSaving}
+              content={content}
+              handleAdminFieldChange={handleAdminFieldChange}
+              handleAdminLogin={handleAdminLogin}
+              handleAdminLogout={handleAdminLogout}
+              handleAdminSave={handleAdminSave}
+              isAdmin={isAdmin}
+              isRemoteAdminAvailable={isRemoteAdminAvailable}
+              setAdminPassword={setAdminPassword}
+            />
+          }
+        />
+        <Route path="/outils-ia" element={<Navigate to="/services" replace />} />
+        <Route path="/offres" element={<Navigate to="/tarifs" replace />} />
+        <Route path="/contact" element={<Navigate to="/reservation" replace />} />
+        <Route path="/vision" element={<Navigate to="/services" replace />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+
+      <footer className="container footer footer-extended">
+        <div>
+          <p className="footer-title">Prometheus</p>
+          <p>{content.brand.description}</p>
+        </div>
+        <div className="footer-links">
+          <Link to="/services">Services</Link>
+          <Link to="/formations">Formations</Link>
+          <Link to="/reservation">Reservation</Link>
+          <a href={quoteWhatsappUrl} target="_blank" rel="noreferrer">
+            WhatsApp
+          </a>
+        </div>
+      </footer>
+
+      <LockedLessonModal bookingWhatsappUrl={bookingWhatsappUrl} item={lockedItem} onClose={() => setLockedItem(null)} />
+      <SeniorChat apiAvailable={apiAvailable} resolveApiPath={getApiPath} />
+    </div>
+  );
+}
+
+function App() {
+  return (
     <HashRouter>
-      <div className="app-shell">
-        <div className="background-glow background-glow-a" />
-        <div className="background-glow background-glow-b" />
-
-        <header className="container topbar">
-          <Link to="/" className="brand">
-            <span className="brand-mark">{content.brand.greekSignature}</span>
-            <strong>{content.brand.name}</strong>
-          </Link>
-          <nav className="main-nav">
-            <NavLink to="/" end>
-              Accueil
-            </NavLink>
-            <NavLink to="/formations">Formations</NavLink>
-            <NavLink to="/outils-ia">Outils IA</NavLink>
-            <NavLink to="/offres">Offres</NavLink>
-            <NavLink to="/vision">Vision SaaS</NavLink>
-            <NavLink to="/contact">Contact</NavLink>
-          </nav>
-        </header>
-
-        {!apiAvailable ? (
-          <div className="container demo-banner">
-            Version demo statique active. Le formulaire est informatif tant que le backend
-            n'est pas deploye.
-          </div>
-        ) : null}
-
-        <Routes>
-          <Route path="/" element={<HomePage content={content} heroImagePath={heroImagePath} />} />
-          <Route path="/formations" element={<TrainingsPage content={content} />} />
-          <Route path="/outils-ia" element={<AiToolsPage content={content} />} />
-          <Route path="/offres" element={<PricingPage content={content} />} />
-          <Route path="/vision" element={<VisionPage content={content} />} />
-          <Route
-            path="/contact"
-            element={
-              <ContactPage
-                apiAvailable={apiAvailable}
-                content={content}
-                feedback={feedback}
-                formData={formData}
-                handleSubmit={handleSubmit}
-                pricingOptions={pricingOptions}
-                sending={sending}
-                setFormData={setFormData}
-              />
-            }
-          />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-
-        <footer className="container footer">
-          <p>
-            Prometheus Senioris - Nous n'offrons pas la lune, nous construisons votre
-            autonomie.
-          </p>
-        </footer>
-
-        <SeniorChat apiAvailable={apiAvailable} resolveApiPath={getApiPath} />
-      </div>
+      <AppShell />
     </HashRouter>
   );
 }

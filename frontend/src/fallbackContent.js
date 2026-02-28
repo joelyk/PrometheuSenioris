@@ -1,285 +1,457 @@
-export const fallbackContent = {
+﻿export const fallbackContent = {
   brand: {
-    name: "Prometheus Senioris",
+    name: "Prometheus",
     greekSignature: "Ignis Sophia",
-    promise: "Le feu de la connaissance numerique, au service des seniors."
+    promise:
+      "Accompagnement informatique, documents et IA pour aller plus vite, plus proprement, plus sereinement.",
+    description:
+      "Prometheus accompagne particuliers, etudiants, independants et petites equipes sur les taches numeriques concretes.",
+    whatsappBaseUrl: "https://api.whatsapp.com/send",
+    quoteMessage: "Bonjour Prometheus, je souhaite demander un devis.",
+    bookingMessage: "Bonjour Prometheus, je souhaite reserver un creneau.",
+    paymentMessage: "Bonjour Prometheus, je souhaite finaliser mon paiement."
   },
   hero: {
-    headline: "Apprendre l'informatique simplement, avec elegance et confiance",
+    headline: "Vos besoins informatiques et vos documents traites avec methode.",
     subheadline:
-      "Prometheus aide les seniors a maitriser Excel, Word, PowerPoint et les outils IA utiles au quotidien.",
-    ctaPrimary: "Voir les offres",
-    ctaSecondary: "Demander un rappel",
+      "Prometheus resout vos taches bureautiques, vous aide a produire des documents solides, a comprendre l'IA et a suivre des formations personnalisees sur Excel, Word, PowerPoint et les usages numeriques utiles.",
+    ctaPrimary: "Demander un devis",
+    ctaSecondary: "Reserver un creneau",
     imagePath: "/images/pexels-fauxels-3184291.jpg",
-    imageAlt: "Accompagnement numerique bienveillant pour seniors",
+    imageAlt: "Accompagnement informatique et bureautique en session de travail",
     metrics: [
       {
-        value: "7 jours",
-        label: "programme intensif sur 7 jours"
+        value: "24h",
+        label: "pour cadrer une demande et proposer une suite claire"
       },
       {
-        value: "8 outils IA",
-        label: "selectionnes pour un usage concret"
+        value: "4 axes",
+        label: "bureautique, documents, IA et formation personnalisee"
       },
       {
-        value: "15 min",
-        label: "exercices quotidiens adaptes"
+        value: "1 interlocuteur",
+        label: "du devis initial a la livraison et au suivi"
       }
     ]
   },
   audiences: [
     {
-      title: "Seniors a la maison",
-      detail: "Vous souhaitez mieux utiliser ordinateur, email et documents.",
-      benefit: "Objectif: autonomie numerique dans la vie quotidienne."
+      title: "Particuliers",
+      detail: "Besoin d'aide pour un document, un CV, une presentation ou une tache numerique urgente.",
+      benefit: "Objectif: gagner du temps et obtenir un resultat propre sans bricolage."
     },
     {
-      title: "Retraites actifs",
-      detail: "Vous animez une association, un club ou un projet personnel.",
-      benefit: "Objectif: gagner du temps avec Excel, Word et presentations."
+      title: "Etudiants",
+      detail: "Besoin de structurer un memoire, un dossier, un tableau ou une soutenance.",
+      benefit: "Objectif: clarifier le fond, la forme et la qualite de presentation."
     },
     {
-      title: "Collaborateurs experimentes",
-      detail: "Vous etes en entreprise et devez adopter de nouveaux logiciels.",
-      benefit: "Objectif: rester performant avec les outils bureautiques et IA."
+      title: "Independants et TPE",
+      detail: "Besoin d'outils simples pour mieux produire, mieux presenter et mieux organiser.",
+      benefit: "Objectif: augmenter la productivite sans alourdir les process."
+    },
+    {
+      title: "Equipes et collaborateurs",
+      detail: "Besoin d'accompagnement sur les logiciels, les documents clients et les usages IA utiles.",
+      benefit: "Objectif: fluidifier l'execution et renforcer l'autonomie des equipes."
     }
   ],
-  coreTrainings: [
+  serviceCategories: [
     {
-      id: "excel-base",
-      title: "Excel Base",
-      level: "Debutant",
-      duration: "1 semaine",
-      price: "59 EUR",
-      points: [
-        "Creer un tableau clair",
-        "Formules essentielles (somme, moyenne, pourcentage)",
-        "Trier, filtrer, imprimer proprement"
+      id: "office",
+      title: "Bureautique et taches rapides",
+      summary:
+        "Correction de fichiers, mise en page, tableaux, presentations et interventions ciblees sur Excel, Word ou PowerPoint.",
+      items: [
+        "Nettoyage et mise au propre de tableaux Excel",
+        "Correction ou finalisation de documents Word",
+        "Slides PowerPoint lisibles et presentables",
+        "Aide ponctuelle sur une tache bloquee"
+      ],
+      cta: "Demander un devis bureautique"
+    },
+    {
+      id: "documents",
+      title: "Redaction et documents professionnels",
+      summary:
+        "Aide a la structuration de memoires, dossiers, supports de cours, notes de synthese, lettres et livrables professionnels.",
+      items: [
+        "Mise en forme et relecture de memoires",
+        "Structuration de dossiers ou rapports",
+        "Creation de templates documentaires",
+        "Export PDF, sommaire, pagination, harmonisation"
+      ],
+      cta: "Faire cadrer mon document"
+    },
+    {
+      id: "cv",
+      title: "CV, profil et candidature",
+      summary:
+        "Creation ou refonte de CV, optimisation LinkedIn et accompagnement sur la presentation des experiences.",
+      items: [
+        "Creation de CV clair et moderne",
+        "Refonte d'un CV existant",
+        "Aide a la lettre ou au message d'accompagnement",
+        "Version PDF et version editable"
+      ],
+      cta: "Refaire mon CV"
+    },
+    {
+      id: "ai",
+      title: "IA utile et productivite",
+      summary:
+        "Comprendre ChatGPT, Claude, Gemini, Mistral ou Perplexity pour rediger, rechercher, synthetiser et gagner du temps correctement.",
+      items: [
+        "Prise en main de ChatGPT et des prompts utiles",
+        "Comparaison d'outils IA selon le besoin",
+        "Relecture, reformulation et synthese de contenus",
+        "Bonnes pratiques de confidentialite et verification"
+      ],
+      cta: "Comprendre les outils IA"
+    }
+  ],
+  workflow: [
+    {
+      step: "01",
+      title: "Vous expliquez le besoin",
+      detail: "Par formulaire ou WhatsApp: objectif, delai, support, niveau et blocage principal."
+    },
+    {
+      step: "02",
+      title: "Prometheus cadre la demande",
+      detail: "Vous recevez une recommandation: devis, mini mission, formation ou session reservee."
+    },
+    {
+      step: "03",
+      title: "Validation et paiement",
+      detail: "Le paiement et les derniers ajustements se finalisent sur WhatsApp pour aller vite."
+    },
+    {
+      step: "04",
+      title: "Execution et suivi",
+      detail: "Livraison, correction, ou formation pas a pas avec retour clair et actionnable."
+    }
+  ],
+  trainingModules: [
+    {
+      id: "excel-essentiel",
+      title: "Excel Essentiel",
+      level: "Debutant a intermediaire",
+      duration: "2 h de contenu + atelier personnalise",
+      price: "39 EUR",
+      format: "Texte + capsules video",
+      summary:
+        "Comprendre les bases solides: tableaux propres, formules utiles, filtres, pourcentages et graphiques simples.",
+      imagePath: "/images/pexels-fauxels-3184291.jpg",
+      outcomes: [
+        "Creer un tableau exploitable rapidement",
+        "Utiliser SOMME, MOYENNE et pourcentage",
+        "Presenter un mini reporting lisible"
+      ],
+      lessons: [
+        {
+          id: "excel-text-1",
+          title: "Demarrer un tableau propre",
+          type: "Texte",
+          duration: "12 min",
+          summary: "Structure de colonnes, titres, formats et hygiene de fichier.",
+          locked: false
+        },
+        {
+          id: "excel-video-1",
+          title: "Capsule video: calculer un total et un pourcentage",
+          type: "Video",
+          duration: "8 min",
+          summary: "Demonstration commentee sur une feuille simple.",
+          locked: false
+        },
+        {
+          id: "excel-premium-1",
+          title: "Exercice guide + correction complete",
+          type: "Premium",
+          duration: "18 min",
+          summary: "Application sur un mini tableau de suivi avec correction pas a pas.",
+          locked: true
+        },
+        {
+          id: "excel-premium-2",
+          title: "Graphiques et mise en forme finale",
+          type: "Premium",
+          duration: "14 min",
+          summary: "Transformer le tableau en support presentable.",
+          locked: true
+        }
       ]
     },
     {
-      id: "word-base",
-      title: "Word Base",
-      level: "Debutant",
-      duration: "1 semaine",
-      price: "49 EUR",
-      points: [
-        "Mise en page lisible",
-        "Modeles de lettres et documents administratifs",
-        "Insertion d'images et export PDF"
+      id: "word-impact",
+      title: "Word Impact",
+      level: "Debutant a avance",
+      duration: "1 h 40 de contenu + retours documentaires",
+      price: "35 EUR",
+      format: "Texte + video + modele",
+      summary:
+        "Structurer un document propre: styles, sommaire, pagination, images, sections et export PDF fiable.",
+      imagePath: "/images/pexels-fauxels-3184291.jpg",
+      outcomes: [
+        "Monter un document long sans chaos",
+        "Uniformiser titres et sous-titres",
+        "Produire un PDF propre pour livraison"
+      ],
+      lessons: [
+        {
+          id: "word-text-1",
+          title: "Les styles qui evitent les documents casses",
+          type: "Texte",
+          duration: "10 min",
+          summary: "La base pour garder une mise en page stable du debut a la fin.",
+          locked: false
+        },
+        {
+          id: "word-video-1",
+          title: "Capsule video: sommaire automatique et pagination",
+          type: "Video",
+          duration: "7 min",
+          summary: "Demonstration de la structure d'un memoire ou rapport.",
+          locked: false
+        },
+        {
+          id: "word-premium-1",
+          title: "Template de rapport et page de garde",
+          type: "Premium",
+          duration: "16 min",
+          summary: "Modele reutilisable pour dossiers, rapports et memoires.",
+          locked: true
+        },
+        {
+          id: "word-premium-2",
+          title: "Correction assistee d'un document reel",
+          type: "Premium",
+          duration: "20 min",
+          summary: "Methode de relecture, harmonisation et livraison.",
+          locked: true
+        }
       ]
     },
     {
-      id: "powerpoint-base",
-      title: "PowerPoint Base",
-      level: "Debutant",
-      duration: "1 semaine",
-      price: "49 EUR",
-      points: [
-        "Structurer une presentation simple",
-        "Choisir les bons visuels",
-        "Presenter avec confiance"
+      id: "powerpoint-clair",
+      title: "PowerPoint Clair",
+      level: "Debutant a intermediaire",
+      duration: "1 h 30 + atelier de repetition",
+      price: "35 EUR",
+      format: "Texte + storyboard video",
+      summary:
+        "Construire une presentation lisible, concise et convaincante sans surcharger les slides.",
+      imagePath: "/images/pexels-fauxels-3184291.jpg",
+      outcomes: [
+        "Structurer une histoire slide par slide",
+        "Choisir une hierarchie visuelle propre",
+        "Preparer une soutenance ou une reunion"
+      ],
+      lessons: [
+        {
+          id: "ppt-text-1",
+          title: "Storyboard simple avant de dessiner les slides",
+          type: "Texte",
+          duration: "9 min",
+          summary: "Comment poser le message avant le design.",
+          locked: false
+        },
+        {
+          id: "ppt-video-1",
+          title: "Capsule video: transformer un brouillon en slide propre",
+          type: "Video",
+          duration: "6 min",
+          summary: "Avant/apres sur un cas concret.",
+          locked: false
+        },
+        {
+          id: "ppt-premium-1",
+          title: "Pack de slides premium + logique orale",
+          type: "Premium",
+          duration: "15 min",
+          summary: "Plan complet pour une presentation plus professionnelle.",
+          locked: true
+        },
+        {
+          id: "ppt-premium-2",
+          title: "Relecture de votre presentation",
+          type: "Premium",
+          duration: "20 min",
+          summary: "Feedback structure, design et oralite.",
+          locked: true
+        }
       ]
-    }
-  ],
-  pillars: [
-    {
-      title: "Pedagogie adaptee aux seniors",
-      description:
-        "Navigation claire, rythme progressif, vocabulaire simple et repetition intelligente."
-    },
-    {
-      title: "Pratique orientee resultats",
-      description:
-        "Chaque session construit une tache reelle: mail, document, tableau, presentation, recherche IA."
-    },
-    {
-      title: "Accompagnement humain",
-      description:
-        "Coaching individuel, retour sur les blocages et mini-plan de progression personnalise."
-    }
-  ],
-  weeklyPath: [
-    {
-      day: "Jour 1",
-      focus: "Prise en main sereine",
-      detail: "Souris, clavier, navigation web, securite de base."
-    },
-    {
-      day: "Jour 2",
-      focus: "Excel utile",
-      detail: "Tableaux simples, formules essentielles, tri et filtres."
-    },
-    {
-      day: "Jour 3",
-      focus: "Word efficace",
-      detail: "Mise en page claire, modeles, courrier pro et perso."
-    },
-    {
-      day: "Jour 4",
-      focus: "PowerPoint clair",
-      detail: "Slides lisibles, structure de presentation, visuels percutants."
-    },
-    {
-      day: "Jour 5",
-      focus: "IA pratique",
-      detail: "Questions simples a l'IA, puis verification des reponses."
-    },
-    {
-      day: "Jour 6",
-      focus: "Atelier personnalise",
-      detail: "Cas concret du participant: entreprise, association ou quotidien."
-    },
-    {
-      day: "Jour 7",
-      focus: "Bilan + plan 30 jours",
-      detail: "Autonomie, checklist et prochaines etapes."
     }
   ],
   aiTools: [
     {
       name: "ChatGPT",
-      role: "Assistant polyvalent",
-      usage: "Rediger, reformuler, comprendre des notions techniques."
+      role: "Redaction, synthese, ideation",
+      usage: "Pour clarifier un texte, resumer un sujet, preparer un plan ou gagner du temps sur une premiere version."
     },
     {
       name: "Claude",
-      role: "Ecriture et synthese",
-      usage: "Creer des documents clairs et resumer de longs contenus."
+      role: "Lecture longue et reformulation",
+      usage: "Utile pour relire un document dense et proposer une reformulation plus propre."
     },
     {
       name: "Gemini",
-      role: "Productivite Google",
-      usage: "Aider sur Gmail, Docs et recherches guidees."
+      role: "Recherche guidee et productivite Google",
+      usage: "Interesse surtout les utilisateurs de Google Workspace et de recherches rapides."
     },
     {
       name: "Mistral Le Chat",
       role: "Assistant francophone",
-      usage: "Idees, Q&A et creation de contenus en francais."
+      usage: "Pertinent pour garder une approche simple sur des demandes en francais."
     },
     {
       name: "Perplexity",
-      role: "Recherche assistee",
-      usage: "Trouver des informations avec sources citees."
+      role: "Recherche avec sources",
+      usage: "Pratique quand il faut verifier rapidement une information avant livraison."
     },
     {
-      name: "Grok",
-      role: "Veille et conversation",
-      usage: "Explorer des sujets d'actualite et comparer des points de vue."
-    },
-    {
-      name: "Canva IA",
-      role: "Creation visuelle",
-      usage: "Concevoir affiches, presentations et supports visuels rapidement."
-    },
-    {
-      name: "Microsoft Copilot",
-      role: "Bureautique Microsoft",
-      usage: "Gagner du temps sur Word, Excel, Outlook et PowerPoint."
+      name: "Canva",
+      role: "Design rapide et CV",
+      usage: "Pour produire un CV, une affiche, une slide ou un visuel presentable plus vite."
     }
   ],
   pricing: [
     {
-      id: "hestia",
-      name: "Hestia Decouverte",
+      id: "diagnostic",
+      name: "Diagnostic express",
       price: "0 EUR",
-      period: "/toujours",
-      description: "Ideal pour commencer sans risque.",
-      highlight: false,
+      period: "une fois",
+      description: "Pour cadrer le besoin, verifier la faisabilite et choisir la bonne formule.",
       features: [
-        "Evaluation numerique de depart (20 min)",
-        "2 modules video: Excel et securite web",
-        "Fiches pratiques telechargeables",
-        "Acces a la newsletter seniors"
+        "Lecture rapide de votre besoin",
+        "Orientation vers le bon service",
+        "Proposition de suite sur WhatsApp"
       ],
-      cta: "Commencer gratuitement"
+      cta: "Recevoir un premier avis",
+      highlight: false
     },
     {
-      id: "athena",
-      name: "Athena Semaine Active",
-      price: "89 EUR",
-      period: "/semaine",
-      description: "Le coeur de l'offre, progression rapide et accompagnee.",
-      highlight: true,
+      id: "mission-ciblee",
+      name: "Mission ciblee",
+      price: "49 EUR",
+      period: "par besoin",
+      description: "Pour une tache precise, un document urgent ou une aide bureautique ponctuelle.",
       features: [
-        "Programme 7 jours sur Excel, Word, PowerPoint et IA",
-        "1 classe live quotidienne (60 min)",
-        "Support WhatsApp ou email",
-        "Bilan final + plan d'autonomie 30 jours"
+        "Une mission bien definie",
+        "Retours et correction inclus",
+        "Paiement finalise sur WhatsApp"
       ],
-      cta: "Reserver ma semaine"
+      cta: "Demander un devis",
+      highlight: true
     },
     {
-      id: "olympus",
-      name: "Olympus Continuum",
-      price: "249 EUR",
-      period: "/mois",
-      description: "Pour aller plus loin avec un coach dedie.",
-      highlight: false,
+      id: "formation-personnalisee",
+      name: "Formation personnalisee",
+      price: "129 EUR",
+      period: "par session",
+      description: "Pour apprendre en profondeur avec contenu, session reservee et suivi.",
       features: [
-        "2 coachings individuels par semaine",
-        "Parcours IA avance: ChatGPT, Claude, Gemini, Perplexity",
-        "Bibliotheque d'exercices metier",
-        "Preparation a l'environnement entreprise"
+        "Programme adapte a votre niveau",
+        "Support texte + video + exercices",
+        "Suivi apres la session"
       ],
-      cta: "Passer en premium"
+      cta: "Reserver un creneau",
+      highlight: false
     }
   ],
+  reservation: {
+    requestTypes: [
+      { value: "devis", label: "Demande de devis" },
+      { value: "creneau", label: "Reservation de creneau" },
+      { value: "formation", label: "Debloquer une formation" }
+    ],
+    services: [
+      { value: "office", label: "Excel / Word / PowerPoint" },
+      { value: "documents", label: "Memoire / dossier / rapport" },
+      { value: "cv", label: "CV / candidature" },
+      { value: "ai", label: "IA et productivite" },
+      { value: "autre", label: "Autre besoin informatique" }
+    ],
+    slots: [
+      { value: "asap", label: "Le plus vite possible" },
+      { value: "this-week", label: "Cette semaine" },
+      { value: "next-week", label: "Semaine prochaine" },
+      { value: "flexible", label: "Flexible" }
+    ],
+    checklist: [
+      "Expliquez la tache ou le resultat attendu",
+      "Ajoutez le delai si la demande est urgente",
+      "Indiquez si vous souhaitez une execution, une correction ou une formation",
+      "Prometheus revient vers vous avec la suite la plus simple"
+    ]
+  },
+  security: {
+    title: "Confidentialite, clarification et execution propre",
+    intro:
+      "Les demandes sont traitees avec sobriete: seules les informations utiles a la mission sont collectees, les documents sont utilises pour l'accompagnement demande, et les bonnes pratiques de verification sont appliquees sur les contenus IA.",
+    commitments: [
+      "Collecte minimale des informations de contact et de besoin",
+      "Aucune cle IA exposee dans le frontend",
+      "Rate limiting et CORS sur l'API",
+      "Verification humaine avant toute livraison importante",
+      "Suppression ou archivage restreint des contenus sensibles selon le contexte"
+    ],
+    note:
+      "Pour une mise en production sensible, l'etape suivante logique est d'ajouter une vraie authentification et un stockage chiffre cote serveur."
+  },
   enterprise: {
-    title: "Vision SaaS entreprise",
-    text: "Prometheus evolue vers une plateforme SaaS de formation continue pour les equipes en entreprise.",
+    title: "Prometheus peut aussi accompagner les petites equipes",
+    text:
+      "La logique du site peut evoluer vers une offre plus structuree pour les entreprises: onboarding logiciel, documentation interne, capsules de formation et assistance a la prise en main d'outils metier.",
     bullets: [
-      "Onboarding logiciel en micro-modules metier",
-      "Tableaux de bord RH avec suivi de progression",
-      "Bibliotheque de parcours par role (support, vente, admin)",
-      "Mode inter-entreprise pour mutualiser les bonnes pratiques"
+      "Parcours internes sur les logiciels du quotidien",
+      "Aide a la redaction de supports et procedures",
+      "Montage de mini bibliotheques de formation",
+      "Accompagnement a l'adoption raisonnee de l'IA"
     ]
   },
   testimonials: [
     {
-      name: "Marie T.",
-      profile: "Retraitee active",
+      name: "Amina",
+      profile: "Etudiante en master",
       quote:
-        "En une semaine, j'ai appris a faire mes tableaux Excel sans stress et a utiliser ChatGPT pour mes courriers."
+        "Mon memoire est enfin propre et coherent. J'ai surtout gagne du temps sur Word et la structure finale."
     },
     {
-      name: "Jacques D.",
-      profile: "Consultant senior",
+      name: "Brice",
+      profile: "Consultant independant",
       quote:
-        "Le format pas a pas est excellent. J'ai enfin compris comment structurer mes slides PowerPoint proprement."
+        "J'avais besoin d'un support PowerPoint rapide et d'un tableau Excel lisible. La mission etait cadre en quelques messages."
     },
     {
-      name: "Nadia B.",
-      profile: "RH en PME",
+      name: "Claire",
+      profile: "Responsable administrative",
       quote:
-        "Prometheus est ideal pour accompagner les collaborateurs experimentes dans les nouveaux outils numeriques."
+        "L'aide sur ChatGPT et la reformulation de documents m'a permis d'aller plus vite tout en gardant le controle."
     }
   ],
   faq: [
     {
-      question: "Le programme est-il adapte aux debutants complets ?",
+      question: "Prometheus fait-il a ma place ou m'apprend a faire ?",
       answer:
-        "Oui. Nous partons des bases avec un rythme progressif et un accompagnement humain."
+        "Les deux existent. Selon le besoin, Prometheus peut executer une tache, corriger un support, ou construire une formation personnalisee pour vous rendre autonome."
     },
     {
-      question: "Combien de temps faut-il par jour ?",
+      question: "Comment se passe le paiement ?",
       answer:
-        "En general 45 a 60 minutes de session, puis 10 a 15 minutes de pratique quotidienne."
+        "Le cadrage initial se fait sur le site puis la finalisation du paiement et des details pratiques se fait sur WhatsApp pour aller vite."
     },
     {
-      question: "Puis-je choisir seulement Excel ou Word ?",
+      question: "Peut-on envoyer un document sensible ?",
       answer:
-        "Oui. Les formations de base peuvent etre suivies separement selon vos besoins."
+        "Oui, mais uniquement si cela est necessaire a la mission. Le site insiste sur la confidentialite et l'etape suivante recommandee en production est un espace securise avec authentification forte."
     },
     {
-      question: "Est-ce utile pour un usage en entreprise ?",
+      question: "Les formations sont-elles disponibles immediatement ?",
       answer:
-        "Oui. Le parcours couvre les usages bureautiques et l'adoption d'outils IA en contexte professionnel."
-    },
-    {
-      question: "Le formulaire fonctionne sur GitHub Pages ?",
-      answer:
-        "En mode demo statique non. Le formulaire complet fonctionne avec la version backend deployee."
+        "Une partie du contenu reste visible gratuitement. Les modules complets, videos et exercices corriges se debloquent via une demande de devis ou un paiement finalise sur WhatsApp."
     }
   ]
 };
+

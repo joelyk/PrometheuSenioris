@@ -1,157 +1,191 @@
-# Prometheus Senioris
+﻿# Prometheus
 
-Plateforme web pour faciliter l'apprentissage des outils informatiques (Excel, Word, PowerPoint, IA) par les seniors.
+Plateforme web React + Express pour proposer des services informatiques, des formations personnalisees, un parcours de devis / reservation puis une reprise sur WhatsApp.
 
-## Demo (GitHub Pages)
+## Positionnement
 
-- Le frontend est visible sur GitHub Pages (statique).
-- Les routes sont en `/#/` (HashRouter). Exemples:
-  - `/#/` (Accueil)
-  - `/#/formations`
-  - `/#/outils-ia`
-  - `/#/offres`
-  - `/#/vision`
-  - `/#/contact`
+Prometheus n'est plus reserve aux seniors.
+Le site est maintenant pense pour:
+- particuliers
+- etudiants
+- independants et TPE
+- petites equipes
 
-Important: GitHub Pages ne peut pas heberger le backend. Pour activer les APIs (contact + IA) en ligne, il faut deployer le backend separément et configurer `VITE_API_URL`.
-
-## Fonctionnalites
-
-- Frontend multi-pages (UX senior-first): Accueil, Formations, Outils IA, Offres, Vision SaaS, Contact
-- Tuteur IA (widget flottant) "Tuteur Prométhée" avec modes:
-  - `Tutorat`
-  - `Guide 3 etapes`
-  - `Reecrire email`
-  - `Prochain cours`
-- API REST backend: contenu du site, contact leads, IA
-- Persistance optionnelle des leads (fichier JSON)
-- Endpoint admin optionnel pour lire les leads
-- Securite backend: `helmet`, compression, CORS allow-list, rate limiting
+Le coeur de l'offre:
+- aide sur Excel, Word, PowerPoint
+- correction et structuration de documents, memoires, rapports
+- creation ou refonte de CV
+- accompagnement sur les outils IA et la productivite
+- formations avec apercu gratuit et contenus premium verrouilles
 
 ## Stack
 
 - Frontend: React + Vite + `react-router-dom`
 - Backend: Node.js + Express
-- Style: CSS (Poppins, theme bleu clair / blanc)
-- IA: OpenAI via le backend (cle API jamais dans React)
+- Style: CSS custom + Poppins
+- IA: OpenAI via backend uniquement
+- Deploy frontend: GitHub Pages
 
-## Structure du projet
+## Parcours utilisateur
 
-- `frontend/`: application React (pages + styles + widget IA)
-- `backend/`: API Express (contenu, contact, IA)
-- `.github/workflows/deploy-pages.yml`: deploiement automatique du frontend sur GitHub Pages
+1. Le visiteur decouvre les services et les formations.
+2. Il remplit un devis ou une reservation.
+3. Le backend enregistre la demande.
+4. Le site propose ensuite une continuation sur WhatsApp.
+5. Les modules premium sont debloques apres validation / paiement hors site.
 
-## Prerequis
+## Pages frontend
 
-- Node.js 20+ recommande (meme version que GitHub Actions)
-- npm
+Routes principales en `HashRouter`:
+- `/#/` Accueil
+- `/#/services`
+- `/#/formations`
+- `/#/tarifs`
+- `/#/reservation`
+- `/#/connexion`
 
-## Installation et lancement (local)
+Redirections legacy encore supportees:
+- `/#/outils-ia` -> `/#/services`
+- `/#/offres` -> `/#/tarifs`
+- `/#/contact` -> `/#/reservation`
+- `/#/vision` -> `/#/services`
+
+## Fonctionnalites implementees
+
+### Frontend
+
+- hero clarifie sur les services reels vendus
+- navigation simplifiee
+- page services orientee execution + IA + securite
+- page formations avec contenu gratuit + modules verrouilles
+- modal de debloquage premium
+- page tarifs avec devis et reservation
+- page reservation avec reprise WhatsApp
+- espace connexion / admin pour modifier les visuels
+- widget IA flottant `Tuteur Promethee`
+
+### Backend
+
+- `GET /api/content`
+- `GET /api/pricing`
+- `POST /api/contact`
+- `GET /api/ai/capabilities`
+- `POST /api/ai/tutor`
+- `POST /api/ai/guide`
+- `POST /api/ai/rewrite`
+- `POST /api/ai/next-course`
+- `POST /api/admin/login`
+- `GET /api/admin/content`
+- `PUT /api/admin/content`
+- `GET /api/admin/leads`
+
+Le backend gere aussi:
+- `helmet`
+- `compression`
+- CORS allow-list
+- rate limiting
+- stockage optionnel des leads
+- stockage optionnel des overrides d'images
+
+## Installation locale
 
 ```bash
 npm install
 npm run dev
 ```
 
-- Frontend: `http://localhost:5173`
-- Backend API: `http://localhost:4000`
+Applications:
+- frontend: `http://localhost:5173`
+- backend: `http://localhost:4000`
 
-Astuce: le frontend en dev appelle `/api/...` et Vite proxy vers le backend.
-
-### Lancer frontend et backend separément (optionnel)
+## Build frontend
 
 ```bash
-# terminal 1
-npm run dev --workspace backend
-
-# terminal 2
-npm run dev --workspace frontend
+npm run build
 ```
 
-## Configuration backend
+## Variables d'environnement backend
 
-Copiez `backend/.env.example` vers `backend/.env` et adaptez.
+Copier `backend/.env.example` vers `backend/.env`.
 
-### Variables d'environnement (backend)
+Variables principales:
+- `PORT`
+- `FRONTEND_ORIGINS`
+- `TRUST_PROXY`
+- `API_RATE_LIMIT`
+- `AI_RATE_LIMIT`
+- `CONTACT_RATE_LIMIT`
+- `LEADS_PERSIST_PATH`
+- `CONTENT_OVERRIDES_PATH`
+- `ADMIN_API_KEY`
+- `ADMIN_SESSION_SECRET`
+- `ADMIN_SESSION_TTL_HOURS`
+- `OPENAI_API_KEY`
+- `OPENAI_MODEL`
 
-- `PORT`: port du backend (defaut `4000`)
-- `FRONTEND_ORIGINS`: liste d'origines CORS separees par des virgules (ex: local + GitHub Pages)
-- `TRUST_PROXY`: a activer si vous etes derriere un proxy (ex: Render). Exemple: `1`
-- `API_RATE_LIMIT`: limite globale `/api` (par minute)
-- `AI_RATE_LIMIT`: limite `/api/ai` (par 10 minutes)
-- `CONTACT_RATE_LIMIT`: limite `/api/contact` (par heure)
-- `LEADS_PERSIST_PATH`: chemin d'un fichier JSON pour sauvegarder les demandes contact (optionnel)
-- `ADMIN_API_KEY`: active `GET /api/admin/leads` (optionnel)
+## Admin visuels
 
-### IA (OpenAI)
+### Mode backend
 
-- `OPENAI_API_KEY`: cle API OpenAI (obligatoire pour activer l'IA)
-- `OPENAI_MODEL`: modele (defaut: `gpt-4o-mini`)
+Si `ADMIN_API_KEY` est configure:
+- la page `/#/connexion` permet une connexion admin
+- le frontend recoit une session signee
+- les changements d'images peuvent etre sauvegardes via `PUT /api/admin/content`
+- les leads peuvent etre consultes via `GET /api/admin/leads`
 
-Important: le frontend n'appelle jamais OpenAI directement. Il appelle uniquement le backend.
+### Mode demo local
 
-## Configuration frontend
+Si le backend admin n'est pas disponible:
+- la page `/#/connexion` reste utilisable en demo locale
+- mot de passe demo: `prometheus-demo`
+- les changements sont stockes en `localStorage` seulement
 
-### Variable d'environnement (frontend)
+## GitHub Pages
 
-- `VITE_API_URL` (optionnel):
-  - en local: inutile (Vite proxy suffit)
-  - en production (GitHub Pages): doit pointer vers votre backend (ex: `https://prometheus-api.onrender.com`)
+Le frontend statique est publie via `.github/workflows/deploy-pages.yml`.
 
-## Endpoints API
+Important:
+- GitHub Pages n'heberge pas le backend
+- pour activer les formulaires et l'IA en ligne, il faut deployer le backend ailleurs
+- en production statique, configurer `VITE_API_URL` vers l'URL du backend
 
-- `GET /api/health`
-- `GET /api/content`
-- `GET /api/pricing`
-- `GET /api/ai/capabilities`
-- `POST /api/contact`
-- `POST /api/ai/tutor`
-- `POST /api/ai/guide`
-- `POST /api/ai/rewrite`
-- `POST /api/ai/next-course`
+Exemple:
+- `https://prometheus-api.onrender.com`
 
-### Admin (optionnel)
+## Deploiement backend
 
-- `GET /api/admin/leads` (header requis: `x-admin-key: <ADMIN_API_KEY>`)
-  - Si `ADMIN_API_KEY` n'est pas defini, l'endpoint renvoie `404`.
+Cibles simples:
+- Render
+- Railway
+- Fly.io
 
-## Image de presentation
+A configurer au minimum:
+- `FRONTEND_ORIGINS=https://joelyk.github.io`
+- `ADMIN_API_KEY`
+- `ADMIN_SESSION_SECRET`
+- `OPENAI_API_KEY`
+- `TRUST_PROXY=1` si necessaire
 
-- Dossier images: `frontend/public/images`
-- Hero image: `frontend/public/images/pexels-fauxels-3184291.jpg`
+## Images
 
-## Deploiement GitHub Pages (frontend)
+- dossier public: `frontend/public/images`
+- image hero par defaut: `frontend/public/images/pexels-fauxels-3184291.jpg`
 
-Le workflow `.github/workflows/deploy-pages.yml` build et publie `frontend/dist` sur GitHub Pages.
+## Notes de securite
 
-Pour connecter le frontend a un backend en ligne:
+Le site pose deja une base correcte:
+- API keys jamais exposees dans React
+- rate limiting
+- CORS borne
+- admin signe cote serveur
 
-1. GitHub -> Repo -> `Settings` -> `Secrets and variables` -> `Actions`
-2. Onglet `Variables` -> `New repository variable`
-3. Nom: `VITE_API_URL`
-4. Valeur: l'URL de votre backend (ex: `https://prometheus-api.onrender.com`)
-5. Faites un commit/push (ou relancez le workflow) pour redeployer le frontend.
+Mais pour une vraie mise en production sensible, l'etape suivante logique est:
+- vraie base de donnees
+- authentification robuste
+- stockage chiffre ou securise des documents
+- audit des journaux et du flux d'upload
 
-## Deploiement backend (piste simple)
+## Verification effectuee
 
-Hebergez `backend/` sur Render / Railway / Fly.io.
-
-Points importants:
-
-- Configurez `FRONTEND_ORIGINS` pour inclure:
-  - `https://joelyk.github.io` (ou votre domaine)
-- Configurez `OPENAI_API_KEY` pour activer l'IA
-- Si vous etes derriere un proxy (souvent le cas), mettez `TRUST_PROXY=1`
-
-## Depannage rapide
-
-- GitHub Pages affiche le README au lieu du site:
-  - `Settings` -> `Pages` -> `Source: GitHub Actions`
-- L'image ne s'affiche pas sur Pages:
-  - verifier que l'image est dans `frontend/public/images`
-- Erreur CORS:
-  - ajouter l'origine dans `FRONTEND_ORIGINS`
-- IA renvoie `503`:
-  - `OPENAI_API_KEY` manquant sur le backend
-- Trop de requetes:
-  - ajuster `API_RATE_LIMIT`, `AI_RATE_LIMIT`, `CONTACT_RATE_LIMIT`
+- `npm run build` OK
+- `node --check backend/src/server.js` OK

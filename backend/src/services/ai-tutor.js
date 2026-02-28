@@ -1,12 +1,14 @@
 import OpenAI from "openai";
 
-const systemPrompt = `Tu es Promethee, un formateur informatique patient pour seniors francophones.
+const systemPrompt = `Tu es Promethee, un assistant informatique francophone, calme et utile.
+Tu aides des particuliers, etudiants, independants et petites equipes.
 Regles:
-- Reponds en francais simple, phrases courtes.
-- Evite le jargon technique.
-- Structure toujours en etapes numerotees.
-- Donne un exemple concret apres les etapes.
-- Termine par une question de verification: "Souhaitez-vous un exercice pratique ?".`;
+- Reponds en francais simple.
+- Evite le jargon inutile.
+- Structure les reponses en etapes numerotees quand cela aide.
+- Reste concret et oriente execution.
+- Signale quand une verification humaine reste necessaire.
+- Termine si possible par une prochaine action claire.`;
 
 const supportedIntents = new Set(["tutor", "guide_3_steps", "rewrite_email", "next_course"]);
 
@@ -34,9 +36,11 @@ function inferTopic(context) {
   if (value.includes("excel")) return "Excel";
   if (value.includes("word")) return "Word";
   if (value.includes("powerpoint")) return "PowerPoint";
-  if (value.includes("ia")) return "outils IA";
-  if (value.includes("contact")) return "orientation de programme";
-  return "initiation numerique";
+  if (value.includes("cv")) return "CV et candidature";
+  if (value.includes("document")) return "documents et rapports";
+  if (value.includes("ia")) return "outils IA et productivite";
+  if (value.includes("reservation")) return "devis et reservation";
+  return "accompagnement informatique general";
 }
 
 function sanitizeText(value, maxLength = 2000) {
@@ -64,35 +68,36 @@ function buildTaskInstruction({ intent, topic, message, objective, completedModu
     if (!safeMessage) {
       throw createBadRequest("message is required for guide_3_steps.");
     }
-    return `Mission: explique ce sujet en exactement 3 etapes.
+    return `Mission: explique ce sujet en exactement 3 etapes utiles.
 Sujet: ${safeMessage}
 Contexte du site: ${topic}
-Style: phrases courtes, mots simples, une phrase de securite a la fin.`;
+Style: phrases courtes, une mise en garde finale si necessaire.`;
   }
 
   if (intent === "rewrite_email") {
     if (!safeMessage) {
       throw createBadRequest("message is required for rewrite_email.");
     }
-    return `Mission: reformule le texte en email clair et poli.
+    return `Mission: reformule le texte en message ou email clair, poli et directement exploitable.
 Texte de base:
 ${safeMessage}
 Contexte du site: ${topic}
 Format attendu:
-1) Objet suggere
-2) Email final pret a copier`;
+1) Objet suggere si pertinent
+2) Version finale
+3) Mini conseil d'envoi`;
   }
 
   if (intent === "next_course") {
     const modulesText = safeModules.length ? safeModules.join(", ") : "Aucun module fourni";
-    return `Mission: proposer le prochain cours ideal pour ce senior.
-Modules termines: ${modulesText}
-Objectif declare: ${safeObjective || "ameliorer la maitrise informatique"}
+    return `Mission: proposer la prochaine formation ou action la plus utile pour cet utilisateur.
+Modules deja vus: ${modulesText}
+Objectif declare: ${safeObjective || "ameliorer sa productivite informatique"}
 Contexte du site: ${topic}
 Format attendu:
-1) Prochain module recommande
+1) Prochaine priorite
 2) Pourquoi ce choix
-3) Mini plan 7 jours`;
+3) Mini plan d'action`;
   }
 
   if (!safeMessage) {
@@ -163,7 +168,7 @@ export async function runAiAssistant({
 
   const completion = await client.chat.completions.create({
     model,
-    temperature: intent === "rewrite_email" ? 0.2 : 0.3,
+    temperature: intent === "rewrite_email" ? 0.2 : 0.35,
     max_tokens: 500,
     messages
   });

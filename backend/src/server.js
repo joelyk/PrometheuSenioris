@@ -1,12 +1,14 @@
-import compression from "compression";
+﻿import compression from "compression";
 import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
 import rateLimit from "express-rate-limit";
 import helmet from "helmet";
-import { siteContent } from "./data/site-content.js";
+import { buildSiteContent } from "./data/site-content.js";
 import { askAiTutor, getSupportedIntents, runAiAssistant } from "./services/ai-tutor.js";
+import { createContentOverridesStore } from "./storage/content-overrides-store.js";
 import { createLeadsStore } from "./storage/leads-store.js";
+import { createAdminSessionToken, verifyAdminSessionToken } from "./utils/admin-session.js";
 
 dotenv.config();
 
@@ -16,6 +18,9 @@ const port = Number(process.env.PORT) || 4000;
 const leadsStore = createLeadsStore({
   persistPath: process.env.LEADS_PERSIST_PATH
 });
+const contentOverridesStore = createContentOverridesStore({
+  persistPath: process.env.CONTENT_OVERRIDES_PATH
+});
 
 function parseTrustProxy(value) {
   if (!value) return undefined;
@@ -24,6 +29,77 @@ function parseTrustProxy(value) {
   const numeric = Number(value);
   if (Number.isFinite(numeric)) return numeric;
   return value;
+}
+
+function sanitizeText(value, maxLength = 500) {
+  return String(value || "").trim().slice(0, maxLength);
+}
+
+function getAdminKey() {
+  return String(process.env.ADMIN_API_KEY || "").trim();
+}
+
+function getAdminSecret() {
+  return String(process.env.ADMIN_SESSION_SECRET || process.env.ADMIN_API_KEY || "").trim();
+}
+
+async function readCurrentContent() {
+  await contentOverridesStore.loadIfNeeded();
+  return buildSiteContent(contentOverridesStore.get());
+}
+
+function buildWhatsappUrl(content, message) {
+  const baseUrl = content?.brand?.whatsappBaseUrl || "https://api.whatsapp.com/send";
+  return `${baseUrl}?text=${encodeURIComponent(String(message || "").trim())}`;
+}
+
+function findLabel(options, value) {
+  return options.find((item) => item.value === value)?.label || value;
+}
+
+function buildLeadWhatsappMessage(content, lead) {
+  const requestTypeLabel = findLabel(content.reservation.requestTypes, lead.requestType || "devis");
+  const serviceLabel = findLabel(content.reservation.services, lead.service || "office");
+  const slotLabel = findLabel(content.reservation.slots, lead.preferredSlot || "asap");
+
+  const intro =
+    lead.requestType === "formation"
+      ? content.brand.paymentMessage
+      : lead.requestType === "creneau"
+      ? content.brand.bookingMessage
+      : content.brand.quoteMessage;
+
+  return [
+    intro,
+    `Nom: ${lead.name}`,
+    `Email: ${lead.email}`,
+    `WhatsApp: ${lead.whatsapp || "non renseigne"}`,
+    `Type: ${requestTypeLabel}`,
+    `Service: ${serviceLabel}`,
+    `Disponibilite: ${slotLabel}`,
+    `Besoin: ${lead.goal}`
+  ].join("\n");
+}
+
+function verifyAdminRequest(req) {
+  const adminKey = getAdminKey();
+  if (!adminKey) {
+    return { ok: false, status: 404, message: "Not found." };
+  }
+
+  const providedKey = sanitizeText(req.header("x-admin-key"), 500);
+  if (providedKey && providedKey === adminKey) {
+    return { ok: true, mode: "key" };
+  }
+
+  const authHeader = req.header("authorization") || "";
+  const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7).trim() : "";
+  const verification = verifyAdminSessionToken(token, getAdminSecret());
+  if (verification.valid) {
+    return { ok: true, mode: "session", expiresAt: verification.expiresAt };
+  }
+
+  return { ok: false, status: 401, message: "Unauthorized." };
 }
 
 const trustProxy = parseTrustProxy(process.env.TRUST_PROXY);
@@ -57,12 +133,11 @@ app.use(
 
       callback(null, allowedOrigins.includes(origin));
     },
-    methods: ["GET", "POST"],
+    methods: ["GET", "POST", "PUT"],
     optionsSuccessStatus: 204
   })
 );
 app.use(express.json({ limit: "100kb" }));
-
 app.use(
   "/api",
   rateLimit({
@@ -113,24 +188,44 @@ app.get("/api/health", (_req, res) => {
   });
 });
 
-app.get("/api/content", (_req, res) => {
-  res.json(siteContent);
+app.get("/api/content", async (_req, res) => {
+  res.json(await readCurrentContent());
 });
 
-app.get("/api/pricing", (_req, res) => {
-  res.json(siteContent.pricing);
+app.get("/api/pricing", async (_req, res) => {
+  const content = await readCurrentContent();
+  res.json(content.pricing);
 });
 
-app.get("/api/admin/leads", async (req, res) => {
-  const adminKey = process.env.ADMIN_API_KEY;
+app.post("/api/admin/login", (req, res) => {
+  const adminKey = getAdminKey();
   if (!adminKey) {
     res.status(404).json({ success: false, message: "Not found." });
     return;
   }
 
-  const providedKey = req.header("x-admin-key");
-  if (providedKey !== adminKey) {
-    res.status(401).json({ success: false, message: "Unauthorized." });
+  const password = sanitizeText(req.body?.password, 500);
+  if (!password || password !== adminKey) {
+    res.status(401).json({ success: false, message: "Identifiants invalides." });
+    return;
+  }
+
+  const session = createAdminSessionToken(
+    getAdminSecret(),
+    Number(process.env.ADMIN_SESSION_TTL_HOURS) || 12
+  );
+
+  res.json({
+    success: true,
+    token: session.token,
+    expiresAt: session.expiresAt
+  });
+});
+
+app.get("/api/admin/leads", async (req, res) => {
+  const auth = verifyAdminRequest(req);
+  if (!auth.ok) {
+    res.status(auth.status).json({ success: false, message: auth.message });
     return;
   }
 
@@ -138,6 +233,36 @@ app.get("/api/admin/leads", async (req, res) => {
   res.json({
     success: true,
     leads: leadsStore.list()
+  });
+});
+
+app.get("/api/admin/content", async (req, res) => {
+  const auth = verifyAdminRequest(req);
+  if (!auth.ok) {
+    res.status(auth.status).json({ success: false, message: auth.message });
+    return;
+  }
+
+  await contentOverridesStore.loadIfNeeded();
+  res.json({
+    success: true,
+    overrides: contentOverridesStore.get(),
+    content: await readCurrentContent()
+  });
+});
+
+app.put("/api/admin/content", async (req, res) => {
+  const auth = verifyAdminRequest(req);
+  if (!auth.ok) {
+    res.status(auth.status).json({ success: false, message: auth.message });
+    return;
+  }
+
+  const overrides = await contentOverridesStore.replace(req.body ?? {});
+  res.json({
+    success: true,
+    overrides,
+    content: await readCurrentContent()
   });
 });
 
@@ -149,8 +274,8 @@ app.get("/api/ai/capabilities", (_req, res) => {
   });
 });
 
-app.post("/api/contact", (req, res) => {
-  const { name, email, goal, plan } = req.body ?? {};
+app.post("/api/contact", async (req, res) => {
+  const { name, email, whatsapp, requestType, service, preferredSlot, goal } = req.body ?? {};
   if (!name || !email || !goal) {
     res.status(400).json({
       success: false,
@@ -160,12 +285,18 @@ app.post("/api/contact", (req, res) => {
   }
 
   const newLead = {
-    name: String(name).trim(),
-    email: String(email).trim().toLowerCase(),
-    goal: String(goal).trim(),
-    plan: plan ? String(plan).trim() : "hestia",
+    name: sanitizeText(name, 120),
+    email: sanitizeText(email, 180).toLowerCase(),
+    whatsapp: sanitizeText(whatsapp, 80),
+    requestType: sanitizeText(requestType, 40) || "devis",
+    service: sanitizeText(service, 80) || "office",
+    preferredSlot: sanitizeText(preferredSlot, 40) || "asap",
+    goal: sanitizeText(goal, 2000),
     createdAt: new Date().toISOString()
   };
+
+  const content = await readCurrentContent();
+  const whatsappUrl = buildWhatsappUrl(content, buildLeadWhatsappMessage(content, newLead));
 
   leadsStore
     .add(newLead)
@@ -173,20 +304,21 @@ app.post("/api/contact", (req, res) => {
       res.status(201).json({
         success: true,
         message:
-          "Votre demande a bien ete envoyee. Un conseiller vous recontacte sous 24h.",
-        lead: savedLead
+          "Votre demande a bien ete envoyee. Vous pouvez maintenant poursuivre sur WhatsApp.",
+        lead: savedLead,
+        whatsappUrl
       });
     })
     .catch((_error) => {
       res.status(201).json({
         success: true,
         message:
-          "Votre demande a bien ete envoyee. Un conseiller vous recontacte sous 24h.",
-        lead: { id: -1, ...newLead }
+          "Votre demande a bien ete envoyee. Vous pouvez maintenant poursuivre sur WhatsApp.",
+        lead: { id: -1, ...newLead },
+        whatsappUrl
       });
     });
 });
-
 app.post("/api/ai/tutor", async (req, res) => {
   const { message, history, context, intent } = req.body ?? {};
 
