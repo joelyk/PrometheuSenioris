@@ -997,18 +997,19 @@ h1 {
   right: 1rem;
   bottom: 1rem;
   z-index: 1;
-  max-width: 260px;
-  padding: 0.9rem;
+  max-width: 210px;
+  display: grid;
+  gap: 0.55rem;
+  padding: 0.8rem;
   border-radius: 18px;
   border: 1px solid rgba(201, 221, 242, 0.8);
   background: rgba(255, 255, 255, 0.9);
   box-shadow: var(--shadow-soft);
 }
 
-.hero-overlay-card p {
-  margin: 0.55rem 0 0.85rem;
-  color: var(--text-soft);
+.hero-overlay-card strong {
   font-size: 0.92rem;
+  color: #0f4b82;
 }
 
 .hero-mini-grid {
@@ -1230,6 +1231,83 @@ h1 {
   gap: 0.8rem;
 }
 
+.blog-article-stack {
+  display: grid;
+  gap: 1.2rem;
+}
+
+.blog-article-card {
+  display: grid;
+  gap: 1rem;
+  padding: 1.2rem;
+  border-radius: 28px;
+  border: 1px solid #bbdcf8;
+  background: linear-gradient(170deg, #ffffff 0%, #eff8ff 62%, #e1f0ff 100%);
+  box-shadow: var(--shadow-card);
+}
+
+.blog-article-head {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 1rem;
+  align-items: start;
+}
+
+.blog-article-head img {
+  width: 100%;
+  min-height: 220px;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 20px;
+}
+
+.blog-article-head h2,
+.blog-article-head p {
+  margin: 0;
+}
+
+.blog-article-head div {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.blog-section-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+
+.blog-section-card {
+  display: grid;
+  gap: 0.55rem;
+  padding: 1rem;
+  border-radius: 20px;
+  border: 1px solid #c8def4;
+  background: rgba(255, 255, 255, 0.88);
+}
+
+.blog-section-card h3,
+.blog-section-card p {
+  margin: 0;
+}
+
+.blog-takeaway {
+  padding: 1rem;
+  border-radius: 18px;
+  border: 1px solid #c8def4;
+  background: #ffffff;
+}
+
+.blog-takeaway strong,
+.blog-takeaway p {
+  margin: 0;
+}
+
+.blog-takeaway p {
+  margin-top: 0.45rem;
+  color: var(--text-soft);
+}
+
 .module-stack {
   display: grid;
   gap: 1.2rem;
@@ -1413,12 +1491,14 @@ h1 {
 @media (max-width: 1040px) {
   .home-clarity-grid,
   .hero-mini-grid,
+  .blog-section-grid,
   .process-grid,
   .lesson-grid,
   .admin-grid {
     grid-template-columns: 1fr;
   }
 
+  .blog-article-head,
   .blog-featured-panel,
   .training-module-header {
     grid-template-columns: 1fr;

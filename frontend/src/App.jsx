@@ -208,10 +208,9 @@ function HomePage({ bookingWhatsappUrl, content, quoteWhatsappUrl, resolveImage 
           <aside className="hero-media hero-media-tall">
             <img src={resolveImage(content.hero.imagePath)} alt={content.hero.imageAlt} loading="lazy" />
             <div className="hero-overlay-card">
-              <strong>Le parcours est clair</strong>
-              <p>Confier une tache, demander un devis, reserver un creneau ou debloquer une formation.</p>
+              <strong>Devis et reservation</strong>
               <a href={quoteWhatsappUrl} className="link-button" target="_blank" rel="noreferrer">
-                Continuer sur WhatsApp
+                WhatsApp
               </a>
             </div>
           </aside>
@@ -439,7 +438,7 @@ function BlogPage({ content, resolveImage }) {
                 {featuredPost.category} - {featuredPost.readTime}
               </p>
               <h2>{featuredPost.title}</h2>
-              <p>{featuredPost.excerpt}</p>
+              <p>{featuredPost.intro}</p>
               <Link to="/reservation" className="btn btn-primary">
                 Transformer ce besoin en demande concrete
               </Link>
@@ -449,19 +448,32 @@ function BlogPage({ content, resolveImage }) {
       ) : null}
 
       <section className="container section contact-section">
-        <div className="card-grid three">
-          {otherPosts.map((post) => (
-            <article key={post.id} className="blog-card">
-              <img src={resolveImage(post.imagePath)} alt={post.title} loading="lazy" />
-              <div className="blog-card-body">
-                <p className="blog-meta">
-                  {post.category} - {post.readTime}
-                </p>
-                <h3>{post.title}</h3>
-                <p>{post.excerpt}</p>
-                <Link to="/reservation" className="link-button">
-                  Demander un accompagnement
-                </Link>
+        <div className="blog-article-stack">
+          {[featuredPost, ...otherPosts].filter(Boolean).map((post) => (
+            <article key={post.id} className="blog-article-card">
+              <div className="blog-article-head">
+                <img src={resolveImage(post.imagePath)} alt={post.title} loading="lazy" />
+                <div>
+                  <p className="blog-meta">
+                    {post.category} - {post.readTime}
+                  </p>
+                  <h2>{post.title}</h2>
+                  <p>{post.intro}</p>
+                </div>
+              </div>
+
+              <div className="blog-section-grid">
+                {post.sections.map((section) => (
+                  <article key={section.title} className="blog-section-card">
+                    <h3>{section.title}</h3>
+                    <p>{section.body}</p>
+                  </article>
+                ))}
+              </div>
+
+              <div className="blog-takeaway">
+                <strong>A retenir</strong>
+                <p>{post.takeaway}</p>
               </div>
             </article>
           ))}
@@ -731,7 +743,7 @@ function ReservationPage({
 
             {nextWhatsappUrl ? (
               <a href={nextWhatsappUrl} className="btn btn-outline" target="_blank" rel="noreferrer">
-                Continuer sur WhatsApp
+                Ouvrir WhatsApp
               </a>
             ) : null}
           </form>
@@ -1303,3 +1315,4 @@ function App() {
 }
 
 export default App;
+

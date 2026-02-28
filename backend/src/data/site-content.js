@@ -439,7 +439,28 @@
       excerpt:
         "Les 4 informations a fournir pour obtenir une reponse rapide sur un tableau, une formule ou un fichier a corriger.",
       readTime: "4 min",
-      imagePath: "/images/pexels-kampus-7983612.jpg"
+      imagePath: "/images/pexels-kampus-7983612.jpg",
+      intro:
+        "Une demande Excel bien formulee evite les allers-retours inutiles. Le but n'est pas seulement de dire qu'un fichier bloque, mais d'expliquer ce que vous attendez a la fin.",
+      sections: [
+        {
+          title: "1. Donner le resultat attendu",
+          body:
+            "Expliquez d'abord ce que vous voulez obtenir: un total, un pourcentage, un tableau propre, un graphique ou une correction complete du fichier."
+        },
+        {
+          title: "2. Montrer ou se situe le blocage",
+          body:
+            "Precisez si le probleme vient d'une formule, d'un filtre, d'un format de cellule, d'un tri ou d'une organisation generale du tableau."
+        },
+        {
+          title: "3. Indiquer le delai",
+          body:
+            "Un besoin pour aujourd'hui, pour une reunion demain ou pour une remise de dossier ne se traite pas de la meme maniere. Le delai aide a prioriser."
+        }
+      ],
+      takeaway:
+        "Plus la demande est precise, plus la reponse peut etre directe, rapide et utile."
     },
     {
       id: "ia-bon-outil",
@@ -448,7 +469,28 @@
       excerpt:
         "Une grille simple pour savoir quel assistant utiliser pour rediger, verifier ou synthetiser sans perdre de temps.",
       readTime: "5 min",
-      imagePath: "/images/pexels-kampus-7983616.jpg"
+      imagePath: "/images/pexels-kampus-7983616.jpg",
+      intro:
+        "Tous les outils IA ne servent pas exactement a la meme chose. Le bon choix depend surtout du type de tache et du niveau de verification attendu.",
+      sections: [
+        {
+          title: "1. Pour lancer une premiere version",
+          body:
+            "ChatGPT reste tres utile pour demarrer un texte, structurer un plan, reformuler ou proposer plusieurs pistes rapidement."
+        },
+        {
+          title: "2. Pour lire un contenu long",
+          body:
+            "Claude est souvent plus confortable quand il faut relire un document dense, comparer des versions ou clarifier un contenu deja riche."
+        },
+        {
+          title: "3. Pour verifier avec des sources",
+          body:
+            "Perplexity devient interessant lorsqu'il faut retrouver des sources ou verifier un point avant de reutiliser une information dans un livrable."
+        }
+      ],
+      takeaway:
+        "Le bon reflexe n'est pas d'utiliser un seul outil partout, mais de choisir celui qui correspond a l'action du moment."
     },
     {
       id: "document-structure",
@@ -457,7 +499,58 @@
       excerpt:
         "Avant de corriger le style, il faut d'abord stabiliser les titres, le plan, la pagination et les parties attendues.",
       readTime: "6 min",
-      imagePath: "/images/pexels-fauxels-3184291.jpg"
+      imagePath: "/images/pexels-fauxels-3184291.jpg",
+      intro:
+        "La plupart des documents longs deviennent difficiles a corriger non pas a cause du texte lui-meme, mais parce que la structure est fragile ou incoherente.",
+      sections: [
+        {
+          title: "1. Des titres non harmonises",
+          body:
+            "Quand chaque titre a un style different, le document devient instable. Il faut d'abord unifier la hierarchie avant toute mise en page fine."
+        },
+        {
+          title: "2. Un plan qui change en cours de route",
+          body:
+            "Si les parties se repetent, se chevauchent ou changent d'intention, la lecture devient confuse. Le plan doit etre fixe avant la finition."
+        },
+        {
+          title: "3. Une pagination et un sommaire non relies",
+          body:
+            "Un sommaire manuel ou des sauts de page mal places cassent rapidement la coherence. Les styles et sections doivent piloter la structure."
+        }
+      ],
+      takeaway:
+        "Un document propre commence par une architecture stable, pas par une decoration visuelle."
+    },
+    {
+      id: "securite-documents-ia",
+      category: "Securite",
+      title: "Ce qu'il faut verifier avant d'envoyer un document ou un contenu a corriger",
+      excerpt:
+        "Un rappel simple des bonnes pratiques pour proteger les informations utiles, limiter les risques et garder la maitrise des donnees partagees.",
+      readTime: "5 min",
+      imagePath: "/images/pexels-kampus-7551617.jpg",
+      intro:
+        "Quand un document contient des informations personnelles, professionnelles ou confidentielles, il faut partager uniquement ce qui est necessaire a la mission.",
+      sections: [
+        {
+          title: "1. Retirer ce qui n'est pas utile",
+          body:
+            "Supprimez ou masquez les informations non necessaires: identifiants, donnees bancaires, numeros sensibles ou commentaires internes qui ne servent pas a la correction."
+        },
+        {
+          title: "2. Clarifier l'objectif exact",
+          body:
+            "Indiquez si vous voulez une correction, une mise en page, une reformulation ou un accompagnement. Cela evite de partager plus de contenu que necessaire."
+        },
+        {
+          title: "3. Verifier avant reutilisation",
+          body:
+            "Quand une IA est utilisee pour aider a reformuler ou synthetiser, une verification humaine reste obligatoire avant tout envoi final ou diffusion."
+        }
+      ],
+      takeaway:
+        "La bonne pratique n'est pas de tout transmettre, mais de transmettre seulement ce qui permet de faire correctement le travail."
     }
   ],
   faq: [
@@ -504,5 +597,6 @@ export function buildSiteContent(overrides = {}) {
 
   return content;
 }
+
 
 
