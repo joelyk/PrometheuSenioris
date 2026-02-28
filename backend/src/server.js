@@ -50,7 +50,21 @@ async function readCurrentContent() {
 
 function buildWhatsappUrl(content, message) {
   const baseUrl = content?.brand?.whatsappBaseUrl || "https://api.whatsapp.com/send";
-  return `${baseUrl}?text=${encodeURIComponent(String(message || "").trim())}`;
+  const params = new URLSearchParams();
+  const phone = String(content?.brand?.whatsappNumberLink || "")
+    .replace(/\D/g, "")
+    .trim();
+
+  if (phone) {
+    params.set("phone", phone);
+  }
+
+  if (message) {
+    params.set("text", String(message).trim());
+  }
+
+  const query = params.toString();
+  return query ? `${baseUrl}?${query}` : baseUrl;
 }
 
 function findLabel(options, value) {

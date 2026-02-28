@@ -1134,6 +1134,10 @@ h1 {
   justify-items: start;
 }
 
+.compact-actions {
+  gap: 0.65rem;
+}
+
 .split-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1406,6 +1410,10 @@ h1 {
 .reservation-side {
   display: grid;
   gap: 1rem;
+}
+
+.contact-channel-list {
+  margin-top: 0.4rem;
 }
 
 .compact-panel {

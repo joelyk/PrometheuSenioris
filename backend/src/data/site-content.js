@@ -7,6 +7,10 @@
     description:
       "Prometheus accompagne particuliers, etudiants, independants et petites equipes sur les taches numeriques concretes.",
     whatsappBaseUrl: "https://api.whatsapp.com/send",
+    phoneNumberDisplay: "+33 7 58 93 35 65",
+    phoneNumberLink: "+33758933565",
+    whatsappNumberDisplay: "+237 652027193",
+    whatsappNumberLink: "237652027193",
     quoteMessage: "Bonjour Prometheus, je souhaite demander un devis.",
     bookingMessage: "Bonjour Prometheus, je souhaite reserver un creneau.",
     paymentMessage: "Bonjour Prometheus, je souhaite finaliser mon paiement."

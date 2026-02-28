@@ -49,7 +49,28 @@ function resolveAssetPath(path) {
 
 function buildWhatsappUrl(content, message) {
   const baseUrl = content?.brand?.whatsappBaseUrl || "https://api.whatsapp.com/send";
-  return `${baseUrl}?text=${encodeURIComponent(String(message || "").trim())}`;
+  const params = new URLSearchParams();
+  const phone = String(content?.brand?.whatsappNumberLink || "")
+    .replace(/\D/g, "")
+    .trim();
+
+  if (phone) {
+    params.set("phone", phone);
+  }
+
+  if (message) {
+    params.set("text", String(message).trim());
+  }
+
+  const query = params.toString();
+  return query ? `${baseUrl}?${query}` : baseUrl;
+}
+
+function buildPhoneUrl(content) {
+  const phone = String(content?.brand?.phoneNumberLink || "")
+    .replace(/[^\d+]/g, "")
+    .trim();
+  return phone ? `tel:${phone}` : "#";
 }
 
 function readStorageJson(key) {
@@ -631,6 +652,7 @@ function PricingPage({ bookingWhatsappUrl, content, quoteWhatsappUrl }) {
 }
 function ReservationPage({
   apiAvailable,
+  callPhoneUrl,
   content,
   feedback,
   formData,
@@ -749,6 +771,23 @@ function ReservationPage({
           </form>
 
           <div className="reservation-side">
+            <article className="glass-card">
+              <p className="eyebrow">Contact direct</p>
+              <h2>Appel ou WhatsApp</h2>
+              <ul className="detail-list contact-channel-list">
+                <li>Appel: {content.brand.phoneNumberDisplay}</li>
+                <li>WhatsApp: {content.brand.whatsappNumberDisplay}</li>
+              </ul>
+              <div className="hero-actions compact-actions">
+                <a href={callPhoneUrl} className="btn btn-outline">
+                  Appeler
+                </a>
+                <a href={nextWhatsappUrl || buildWhatsappUrl(content, content.brand.bookingMessage)} className="btn btn-primary" target="_blank" rel="noreferrer">
+                  WhatsApp
+                </a>
+              </div>
+            </article>
+
             <article className="glass-card">
               <p className="eyebrow">Checklist</p>
               <h2>Ce qu'il faut preciser pour aller vite</h2>
@@ -1007,6 +1046,7 @@ function AppShell() {
     () => buildWhatsappUrl(activeContent, activeContent.brand.quoteMessage),
     [activeContent]
   );
+  const callPhoneUrl = useMemo(() => buildPhoneUrl(activeContent), [activeContent]);
   const isAdmin = Boolean(adminSession?.token || adminSession?.mode === "demo");
   const isRemoteAdminAvailable = apiAvailable && !isGithubPagesDemo;
 
@@ -1247,6 +1287,7 @@ function AppShell() {
           element={
             <ReservationPage
               apiAvailable={apiAvailable}
+              callPhoneUrl={callPhoneUrl}
               content={content}
               feedback={feedback}
               formData={formData}
@@ -1294,6 +1335,7 @@ function AppShell() {
           <Link to="/formations">Formations</Link>
           <Link to="/blog">Blog</Link>
           <Link to="/reservation">Reservation</Link>
+          <a href={callPhoneUrl}>Appel</a>
           <a href={quoteWhatsappUrl} target="_blank" rel="noreferrer">
             WhatsApp
           </a>
