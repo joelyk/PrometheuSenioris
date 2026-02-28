@@ -439,6 +439,7 @@ function ServicesPage({ content, quoteWhatsappUrl }) {
 
 function BlogPage({ content, resolveImage }) {
   const [featuredPost, ...otherPosts] = content.blogPosts;
+  const posts = [featuredPost, ...otherPosts].filter(Boolean);
 
   return (
     <main className="route-page">
@@ -448,6 +449,13 @@ function BlogPage({ content, resolveImage }) {
         <p className="hero-copy">
           Le blog explique comment cadrer un besoin, choisir un bon outil et corriger les erreurs les plus frequentes avant de lancer une mission ou une formation.
         </p>
+        <div className="blog-topic-nav">
+          {posts.map((post) => (
+            <a key={post.id} href={`#${post.id}`} className="blog-topic-chip">
+              {post.category}
+            </a>
+          ))}
+        </div>
       </section>
 
       {featuredPost ? (
@@ -470,14 +478,15 @@ function BlogPage({ content, resolveImage }) {
 
       <section className="container section contact-section">
         <div className="blog-article-stack">
-          {[featuredPost, ...otherPosts].filter(Boolean).map((post) => (
-            <article key={post.id} className="blog-article-card">
+          {posts.map((post, index) => (
+            <article key={post.id} id={post.id} className="blog-article-card">
               <div className="blog-article-head">
                 <img src={resolveImage(post.imagePath)} alt={post.title} loading="lazy" />
                 <div>
                   <p className="blog-meta">
                     {post.category} - {post.readTime}
                   </p>
+                  <span className="blog-index">Article {index + 1}</span>
                   <h2>{post.title}</h2>
                   <p>{post.intro}</p>
                 </div>
