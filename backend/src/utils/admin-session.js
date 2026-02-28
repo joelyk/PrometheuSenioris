@@ -20,9 +20,27 @@ function sign(payload, secret) {
   return crypto.createHmac("sha256", secret).update(payload).digest("base64url");
 }
 
+function timingSafeEqualString(left, right) {
+  const leftBuffer = Buffer.from(String(left || ""), "utf8");
+  const rightBuffer = Buffer.from(String(right || ""), "utf8");
+
+  if (leftBuffer.length !== rightBuffer.length) {
+    return false;
+  }
+
+  return crypto.timingSafeEqual(leftBuffer, rightBuffer);
+}
+
 export function createAdminSessionToken(secret, ttlHours = 12) {
   const expiresAt = Date.now() + Math.max(1, ttlHours) * 60 * 60 * 1000;
-  const payload = base64UrlEncode(JSON.stringify({ role: "admin", exp: expiresAt }));
+  const payload = base64UrlEncode(
+    JSON.stringify({
+      role: "admin",
+      exp: expiresAt,
+      iat: Date.now(),
+      jti: crypto.randomBytes(16).toString("hex")
+    })
+  );
   const signature = sign(payload, secret);
   return {
     token: `${payload}.${signature}`,
@@ -35,7 +53,7 @@ export function verifyAdminSessionToken(token, secret) {
 
   const [payload, signature] = String(token).split(".");
   if (!payload || !signature) return { valid: false };
-  if (sign(payload, secret) !== signature) return { valid: false };
+  if (!timingSafeEqualString(sign(payload, secret), signature)) return { valid: false };
 
   try {
     const decoded = JSON.parse(base64UrlDecode(payload));

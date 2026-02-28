@@ -109,12 +109,17 @@ npm run build
 Copier `backend/.env.example` vers `backend/.env`.
 
 Variables principales:
+- `NODE_ENV`
 - `PORT`
 - `FRONTEND_ORIGINS`
 - `TRUST_PROXY`
+- `REQUIRE_HTTPS`
+- `JSON_BODY_LIMIT`
 - `API_RATE_LIMIT`
 - `AI_RATE_LIMIT`
 - `CONTACT_RATE_LIMIT`
+- `ADMIN_RATE_LIMIT`
+- `ADMIN_LOGIN_RATE_LIMIT`
 - `LEADS_PERSIST_PATH`
 - `CONTENT_OVERRIDES_PATH`
 - `ADMIN_API_KEY`
@@ -125,20 +130,18 @@ Variables principales:
 
 ## Admin visuels
 
-### Mode backend
+L'administration est volontairement fermee si le backend securise n'est pas disponible.
 
-Si `ADMIN_API_KEY` est configure:
+Si `ADMIN_API_KEY` et `ADMIN_SESSION_SECRET` sont configures:
 - la page `/#/connexion` permet une connexion admin
-- le frontend recoit une session signee
+- le frontend recoit une session signee cote serveur
 - les changements d'images peuvent etre sauvegardes via `PUT /api/admin/content`
 - les leads peuvent etre consultes via `GET /api/admin/leads`
 
-### Mode demo local
-
 Si le backend admin n'est pas disponible:
-- la page `/#/connexion` reste utilisable en demo locale
-- mot de passe demo: `prometheus-demo`
-- les changements sont stockes en `localStorage` seulement
+- la page `/#/connexion` affiche un etat indisponible
+- aucun mode demo public n'est autorise
+- aucune edition locale n'est simulee dans le navigateur
 
 ## GitHub Pages
 
@@ -160,30 +163,43 @@ Cibles simples:
 - Fly.io
 
 A configurer au minimum:
+- `NODE_ENV=production`
 - `FRONTEND_ORIGINS=https://joelyk.github.io`
-- `ADMIN_API_KEY`
-- `ADMIN_SESSION_SECRET`
+- `REQUIRE_HTTPS=true` si l'infra ne force pas deja HTTPS
+- `ADMIN_API_KEY` avec une valeur longue aleatoire
+- `ADMIN_SESSION_SECRET` avec une valeur longue aleatoire differente
 - `OPENAI_API_KEY`
 - `TRUST_PROXY=1` si necessaire
 
 ## Images
 
 - dossier public: `frontend/public/images`
-- image hero par defaut: `frontend/public/images/pexels-fauxels-3184291.jpg`
+- image hero par defaut: `frontend/public/images/pexels-kampus-7551617.jpg`
 
 ## Notes de securite
 
-Le site pose deja une base correcte:
+Mesures deja en place:
 - API keys jamais exposees dans React
-- rate limiting
-- CORS borne
-- admin signe cote serveur
+- politique CSP et `referrer` restrictive sur le frontend statique
+- `helmet` sur l'API avec HSTS en production
+- suppression de `x-powered-by`
+- CORS borne a une allow-list
+- refus explicite des origines non autorisees
+- limitation de debit generale, IA, contact, admin et login admin
+- `Content-Type` JSON exige sur les routes d'ecriture
+- validation stricte des emails, choix utilisateur et longueurs de champs
+- pas de renvoi inutile des donnees sensibles du lead apres soumission
+- sessions admin signees avec HMAC et comparaison temporelle sure
+- secret de session admin exige et distinct de la cle admin
+- cache des routes API sensibles desactive (`no-store`)
+- mode admin demo retire du frontend public
 
-Mais pour une vraie mise en production sensible, l'etape suivante logique est:
-- vraie base de donnees
-- authentification robuste
-- stockage chiffre ou securise des documents
-- audit des journaux et du flux d'upload
+Pour une mise en production encore plus sensible:
+- base de donnees geree avec chiffrement au repos
+- vrai fournisseur d'authentification admin
+- journalisation centralisee et alerte sur les erreurs / abus
+- sauvegarde securisee des leads et rotation des secrets
+- stockage de documents avec antivirus et controle de type MIME
 
 ## Verification effectuee
 

@@ -13,8 +13,6 @@ import { fallbackContent } from "./fallbackContent";
 const API_BASE = import.meta.env.VITE_API_URL || "";
 const BASE_URL = import.meta.env.BASE_URL || "/";
 const ADMIN_SESSION_KEY = "prometheus-admin-session";
-const CONTENT_OVERRIDES_KEY = "prometheus-content-overrides";
-const DEMO_ADMIN_PASSWORD = "prometheus-demo";
 
 const emptyForm = {
   name: "",
@@ -66,19 +64,6 @@ function buildWhatsappUrl(content, message) {
   return query ? `${baseUrl}?${query}` : baseUrl;
 }
 
-function readStorageJson(key) {
-  if (typeof window === "undefined") {
-    return null;
-  }
-
-  try {
-    const raw = window.localStorage.getItem(key);
-    return raw ? JSON.parse(raw) : null;
-  } catch (_error) {
-    return null;
-  }
-}
-
 function readSessionJson(key) {
   if (typeof window === "undefined") {
     return null;
@@ -90,14 +75,6 @@ function readSessionJson(key) {
   } catch (_error) {
     return null;
   }
-}
-
-function writeStorageJson(key, value) {
-  if (typeof window === "undefined") {
-    return;
-  }
-
-  window.localStorage.setItem(key, JSON.stringify(value));
 }
 
 function writeSessionJson(key, value) {
@@ -121,29 +98,6 @@ function removeStorageKey(key, type = "local") {
   window.localStorage.removeItem(key);
 }
 
-function applyImageOverrides(baseContent, overrides) {
-  const content = JSON.parse(JSON.stringify(baseContent));
-  if (!overrides || typeof overrides !== "object") {
-    return content;
-  }
-
-  if (typeof overrides.heroImagePath === "string" && overrides.heroImagePath.trim()) {
-    content.hero.imagePath = overrides.heroImagePath.trim();
-  }
-
-  if (overrides.moduleImages && typeof overrides.moduleImages === "object") {
-    content.trainingModules = content.trainingModules.map((module) => ({
-      ...module,
-      imagePath:
-        typeof overrides.moduleImages[module.id] === "string" && overrides.moduleImages[module.id].trim()
-          ? overrides.moduleImages[module.id].trim()
-          : module.imagePath
-    }));
-  }
-
-  return content;
-}
-
 function createAdminDraft(content) {
   return {
     heroImagePath: content.hero.imagePath,
@@ -158,9 +112,9 @@ function findLabel(options, value) {
 }
 
 function buildReservationMessage(content, formData) {
-  const requestTypeLabel = findLabel(fallbackContent.reservation.requestTypes, formData.requestType);
-  const serviceLabel = findLabel(fallbackContent.reservation.services, formData.service);
-  const slotLabel = findLabel(fallbackContent.reservation.slots, formData.preferredSlot);
+  const requestTypeLabel = findLabel(content.reservation.requestTypes, formData.requestType);
+  const serviceLabel = findLabel(content.reservation.services, formData.service);
+  const slotLabel = findLabel(content.reservation.slots, formData.preferredSlot);
 
   return [
     formData.requestType === "formation"
@@ -806,7 +760,6 @@ function ReservationPage({ content, feedback, formData, handleSubmit, nextWhatsa
 function AdminPage({
   adminFeedback,
   adminLoading,
-  adminMode,
   adminPassword,
   adminSaving,
   content,
@@ -858,34 +811,43 @@ function AdminPage({
         {!isAdmin ? (
           <div className="admin-card">
             <p className="eyebrow">Authentification</p>
-            <h2>{isRemoteAdminAvailable ? "Connexion administrateur" : "Acces de configuration"}</h2>
+            <h2>{isRemoteAdminAvailable ? "Connexion administrateur" : "Administration indisponible"}</h2>
             <p>
               {isRemoteAdminAvailable
                 ? "Entrez vos informations d'administration pour gerer les visuels du site."
-                : "Cette interface permet de preparer ou mettre a jour les visuels du site sur cet environnement."}
+                : "L'espace administrateur est accessible uniquement via un backend securise et configure avec une cle admin."}
             </p>
-            <form className="contact-form admin-login-form" onSubmit={handleAdminLogin}>
-              <label htmlFor="adminPassword">Mot de passe admin</label>
-              <input
-                id="adminPassword"
-                type="password"
-                value={adminPassword}
-                onChange={(event) => setAdminPassword(event.target.value)}
-                placeholder="Mot de passe admin"
-                required
-              />
-              <button type="submit" className="btn btn-primary" disabled={adminLoading}>
-                {adminLoading ? "Connexion..." : "Se connecter"}
-              </button>
-              {adminFeedback ? <p className="feedback">{adminFeedback}</p> : null}
-            </form>
+            {isRemoteAdminAvailable ? (
+              <form className="contact-form admin-login-form" onSubmit={handleAdminLogin}>
+                <label htmlFor="adminPassword">Mot de passe admin</label>
+                <input
+                  id="adminPassword"
+                  type="password"
+                  value={adminPassword}
+                  onChange={(event) => setAdminPassword(event.target.value)}
+                  placeholder="Mot de passe admin"
+                  required
+                />
+                <button type="submit" className="btn btn-primary" disabled={adminLoading}>
+                  {adminLoading ? "Connexion..." : "Se connecter"}
+                </button>
+                {adminFeedback ? <p className="feedback">{adminFeedback}</p> : null}
+              </form>
+            ) : (
+              <div className="glass-card">
+                <p className="service-summary">
+                  Pour activer cette zone, deployeez le backend, definissez `ADMIN_API_KEY`,
+                  `ADMIN_SESSION_SECRET` et utilisez `VITE_API_URL` vers l'API de production.
+                </p>
+              </div>
+            )}
           </div>
         ) : (
           <div className="admin-stack">
             <div className="admin-card admin-card-toolbar">
               <div>
                 <p className="eyebrow">Session active</p>
-                <h2>Mode {adminMode === "remote" ? "synchronise" : "edition"}</h2>
+                <h2>Mode synchronise</h2>
               </div>
               <button type="button" className="btn btn-outline" onClick={handleAdminLogout}>
                 Se deconnecter
@@ -976,7 +938,6 @@ function AppShell() {
   const [adminLoading, setAdminLoading] = useState(false);
   const [adminSaving, setAdminSaving] = useState(false);
   const [adminSession, setAdminSession] = useState(() => readSessionJson(ADMIN_SESSION_KEY));
-  const [adminMode, setAdminMode] = useState(() => readSessionJson(ADMIN_SESSION_KEY)?.mode || "");
   const isGithubPagesDemo =
     typeof window !== "undefined" &&
     window.location.hostname.endsWith("github.io") &&
@@ -986,11 +947,9 @@ function AppShell() {
     const controller = new AbortController();
 
     async function loadContent() {
-      const localOverrides = readStorageJson(CONTENT_OVERRIDES_KEY) || {};
-
       if (isGithubPagesDemo) {
         setApiAvailable(false);
-        setContent(applyImageOverrides(fallbackContent, localOverrides));
+        setContent(fallbackContent);
         setLoading(false);
         return;
       }
@@ -1012,7 +971,7 @@ function AppShell() {
       } catch (err) {
         if (err.name !== "AbortError") {
           setApiAvailable(false);
-          setContent(applyImageOverrides(fallbackContent, localOverrides));
+          setContent(fallbackContent);
           setError("");
         }
       } finally {
@@ -1034,15 +993,11 @@ function AppShell() {
     () => buildWhatsappUrl(activeContent, activeContent.brand.quoteMessage),
     [activeContent]
   );
-  const isAdmin = Boolean(adminSession?.token || adminSession?.mode === "demo");
+  const isAdmin = Boolean(adminSession?.token);
   const isRemoteAdminAvailable = apiAvailable && !isGithubPagesDemo;
 
   function resolveImage(path) {
     return resolveAssetPath(path);
-  }
-
-  function updateVisibleContentWithOverrides(overrides) {
-    setContent((prev) => applyImageOverrides(prev || fallbackContent, overrides));
   }
 
   async function handleSubmit(event) {
@@ -1093,17 +1048,7 @@ function AppShell() {
     }
 
     if (!isRemoteAdminAvailable) {
-      if (adminPassword.trim() !== DEMO_ADMIN_PASSWORD) {
-        setAdminFeedback("Mot de passe de configuration invalide.");
-        return;
-      }
-
-      const session = { token: "demo", mode: "demo" };
-      setAdminSession(session);
-      setAdminMode("demo");
-      writeSessionJson(ADMIN_SESSION_KEY, session);
-      setAdminPassword("");
-      setAdminFeedback("Acces de configuration ouvert.");
+      setAdminFeedback("Administration indisponible sur cet environnement.");
       return;
     }
 
@@ -1124,11 +1069,9 @@ function AppShell() {
 
       const session = {
         token: result.token,
-        mode: "remote",
         expiresAt: result.expiresAt || ""
       };
       setAdminSession(session);
-      setAdminMode("remote");
       writeSessionJson(ADMIN_SESSION_KEY, session);
       setAdminPassword("");
       setAdminFeedback("Connexion admin reussie.");
@@ -1151,29 +1094,26 @@ function AppShell() {
 
     try {
       setAdminSaving(true);
-      if (adminMode === "remote" && adminSession?.token) {
-        const response = await fetch(getApiPath("/api/admin/content"), {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${adminSession.token}`
-          },
-          body: JSON.stringify(overrides)
-        });
-        const result = await response.json();
-
-        if (!response.ok) {
-          throw new Error(result.message || "Enregistrement impossible.");
-        }
-
-        setContent(result.content);
-        setAdminFeedback("Visuels enregistres sur le backend.");
-        return;
+      if (!adminSession?.token || !isRemoteAdminAvailable) {
+        throw new Error("Administration indisponible sur cet environnement.");
       }
 
-      writeStorageJson(CONTENT_OVERRIDES_KEY, overrides);
-      updateVisibleContentWithOverrides(overrides);
-      setAdminFeedback("Visuels mis a jour.");
+      const response = await fetch(getApiPath("/api/admin/content"), {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${adminSession.token}`
+        },
+        body: JSON.stringify(overrides)
+      });
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Enregistrement impossible.");
+      }
+
+      setContent(result.content);
+      setAdminFeedback("Visuels enregistres sur le backend.");
     } catch (error) {
       setAdminFeedback(error.message);
     } finally {
@@ -1183,7 +1123,6 @@ function AppShell() {
 
   function handleAdminLogout() {
     setAdminSession(null);
-    setAdminMode("");
     setAdminPassword("");
     setAdminFeedback("Session fermee.");
     removeStorageKey(ADMIN_SESSION_KEY, "session");
@@ -1286,13 +1225,12 @@ function AppShell() {
         <Route
           path="/connexion"
           element={
-            <AdminPage
-              adminFeedback={adminFeedback}
-              adminLoading={adminLoading}
-              adminMode={adminMode}
-              adminPassword={adminPassword}
-              adminSaving={adminSaving}
-              content={content}
+              <AdminPage
+                adminFeedback={adminFeedback}
+                adminLoading={adminLoading}
+                adminPassword={adminPassword}
+                adminSaving={adminSaving}
+                content={content}
               handleAdminFieldChange={handleAdminFieldChange}
               handleAdminLogin={handleAdminLogin}
               handleAdminLogout={handleAdminLogout}
