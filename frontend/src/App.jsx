@@ -17,7 +17,7 @@ const ADMIN_SESSION_KEY = "prometheus-admin-session";
 const emptyForm = {
   name: "",
   email: "",
-  whatsapp: "",
+  phone: "",
   requestType: "devis",
   service: "office",
   preferredSlot: "asap",
@@ -45,23 +45,11 @@ function resolveAssetPath(path) {
   return `${BASE_URL}${path}`;
 }
 
-function buildWhatsappUrl(content, message) {
-  const baseUrl = content?.brand?.whatsappBaseUrl || "https://api.whatsapp.com/send";
-  const params = new URLSearchParams();
-  const phone = String(content?.brand?.whatsappNumberLink || "")
-    .replace(/\D/g, "")
+function buildPhoneUrl(content) {
+  const phone = String(content?.brand?.phoneNumberLink || "")
+    .replace(/[^\d+]/g, "")
     .trim();
-
-  if (phone) {
-    params.set("phone", phone);
-  }
-
-  if (message) {
-    params.set("text", String(message).trim());
-  }
-
-  const query = params.toString();
-  return query ? `${baseUrl}?${query}` : baseUrl;
+  return phone ? `tel:${phone}` : "#";
 }
 
 function readSessionJson(key) {
@@ -107,43 +95,19 @@ function createAdminDraft(content) {
   };
 }
 
-function findLabel(options, value) {
-  return options.find((item) => item.value === value)?.label || value;
-}
-
-function buildReservationMessage(content, formData) {
-  const requestTypeLabel = findLabel(content.reservation.requestTypes, formData.requestType);
-  const serviceLabel = findLabel(content.reservation.services, formData.service);
-  const slotLabel = findLabel(content.reservation.slots, formData.preferredSlot);
-
-  return [
-    formData.requestType === "formation"
-      ? content.brand.paymentMessage
-      : formData.requestType === "creneau"
-      ? content.brand.bookingMessage
-      : content.brand.quoteMessage,
-    `Nom: ${formData.name || "non renseigne"}`,
-    `Email: ${formData.email || "non renseigne"}`,
-    `WhatsApp: ${formData.whatsapp || "non renseigne"}`,
-    `Type: ${requestTypeLabel}`,
-    `Service: ${serviceLabel}`,
-    `Disponibilite: ${slotLabel}`,
-    `Besoin: ${formData.goal || "non renseigne"}`
-  ].join("\n");
-}
-function HomePage({ bookingWhatsappUrl, content, quoteWhatsappUrl, resolveImage }) {
+function HomePage({ callPhoneUrl, content, resolveImage }) {
   const clarityBlocks = [
     {
-      title: "Deleguer une tache",
-      text: "Vous avez un document, un tableau, un CV ou une presentation a corriger ou finaliser."
+      title: "Envoyer votre besoin",
+      text: "Dites simplement ce que vous voulez: corriger un fichier, refaire un CV, creer un visuel ou apprendre un outil."
     },
     {
-      title: "Apprendre un outil",
-      text: "Vous voulez comprendre Excel, Word, PowerPoint ou un outil IA avec une methode simple."
+      title: "Recevoir une reponse claire",
+      text: "Prometheus vous dit vite si le besoin passe par une aide rapide, un devis ou une formation."
     },
     {
-      title: "Reserver un accompagnement",
-      text: "Vous avez besoin d'un devis rapide, d'un creneau de travail ou d'une formation personnalisee."
+      title: "Passer a l'action",
+      text: "Vous validez la suite et le travail commence. Vous pouvez aussi appeler aux horaires indiques."
     }
   ];
 
@@ -159,7 +123,7 @@ function HomePage({ bookingWhatsappUrl, content, quoteWhatsappUrl, resolveImage 
               <Link to="/reservation" className="btn btn-primary">
                 {content.hero.ctaPrimary}
               </Link>
-              <a href={bookingWhatsappUrl} className="btn btn-outline" target="_blank" rel="noreferrer">
+              <a href={callPhoneUrl} className="btn btn-outline">
                 {content.hero.ctaSecondary}
               </a>
             </div>
@@ -176,10 +140,9 @@ function HomePage({ bookingWhatsappUrl, content, quoteWhatsappUrl, resolveImage 
           <aside className="hero-media hero-media-tall">
             <img src={resolveImage(content.hero.imagePath)} alt={content.hero.imageAlt} loading="lazy" />
             <div className="hero-overlay-card">
-              <strong>Devis et reservation</strong>
-              <a href={quoteWhatsappUrl} className="link-button" target="_blank" rel="noreferrer">
-                WhatsApp
-              </a>
+              <strong>Formulaire ou appel</strong>
+              <span>{content.brand.phoneNumberDisplay}</span>
+              <span>{content.brand.callHours}</span>
             </div>
           </aside>
         </div>
@@ -187,8 +150,8 @@ function HomePage({ bookingWhatsappUrl, content, quoteWhatsappUrl, resolveImage 
 
       <section className="container section">
         <div className="section-heading">
-          <p className="eyebrow">Comprendre en un regard</p>
-          <h2>Trois facons simples de travailler avec Prometheus</h2>
+          <p className="eyebrow">Simple a suivre</p>
+          <h2>En 3 etapes</h2>
         </div>
         <div className="home-clarity-grid">
           {clarityBlocks.map((block, index) => (
@@ -207,9 +170,9 @@ function HomePage({ bookingWhatsappUrl, content, quoteWhatsappUrl, resolveImage 
       <section className="container section">
         <div className="section-heading">
           <p className="eyebrow">Services</p>
-          <h2>Ce que vous pouvez demander tout de suite</h2>
+          <h2>Ce que vous pouvez demander des maintenant</h2>
           <p className="hero-copy">
-            L'offre couvre l'execution, la correction et la formation sur des besoins numeriques concrets.
+            Vous pouvez demander de l'aide pour un fichier, un document, un CV, Canva, l'IA ou une formation.
           </p>
         </div>
         <div className="card-grid four">
@@ -232,8 +195,8 @@ function HomePage({ bookingWhatsappUrl, content, quoteWhatsappUrl, resolveImage 
 
       <section className="container section">
         <div className="section-heading">
-          <p className="eyebrow">Process</p>
-          <h2>Comment demarrer sans perdre de temps</h2>
+          <p className="eyebrow">Etapes</p>
+          <h2>Comment demarrer simplement</h2>
         </div>
         <div className="timeline process-grid">
           {content.workflow.map((step) => (
@@ -257,8 +220,8 @@ function HomePage({ bookingWhatsappUrl, content, quoteWhatsappUrl, resolveImage 
             <Link to="/reservation" className="btn btn-primary">
               Envoyer un besoin
             </Link>
-            <a href={quoteWhatsappUrl} className="btn btn-outline" target="_blank" rel="noreferrer">
-              Devis sur WhatsApp
+            <a href={callPhoneUrl} className="btn btn-outline">
+              Appeler
             </a>
           </div>
         </div>
@@ -291,7 +254,7 @@ function HomePage({ bookingWhatsappUrl, content, quoteWhatsappUrl, resolveImage 
       <section className="container section contact-section">
         <div className="section-heading">
           <p className="eyebrow">Retours</p>
-          <h2>Des demandes bien cadrees et des livrables utiles</h2>
+          <h2>Des demandes bien comprises et des resultats utiles</h2>
         </div>
         <div className="card-grid three">
           {content.testimonials.map((review) => (
@@ -308,14 +271,14 @@ function HomePage({ bookingWhatsappUrl, content, quoteWhatsappUrl, resolveImage 
   );
 }
 
-function ServicesPage({ content, quoteWhatsappUrl }) {
+function ServicesPage({ callPhoneUrl, content }) {
   return (
     <main className="route-page">
       <section className="container hero page-intro">
         <p className="eyebrow">Services</p>
-        <h1>Accompagnement informatique, documents, IA et productivite</h1>
+        <h1>Des aides claires pour vos besoins sur ordinateur</h1>
         <p className="hero-copy">
-          Ici, le coeur de l'offre est clair: resoudre une tache, remettre un support au propre, apprendre un outil, ou structurer un projet documentaire.
+          Le but est simple: corriger, expliquer, refaire ou finir ce qui vous bloque sur Excel, Word, PowerPoint, Canva, les CV ou les outils IA.
         </p>
       </section>
 
@@ -338,7 +301,7 @@ function ServicesPage({ content, quoteWhatsappUrl }) {
       <section className="container section">
         <div className="section-heading">
           <p className="eyebrow">Outils IA</p>
-          <h2>Les outils que Prometheus peut vous apprendre a utiliser utilement</h2>
+          <h2>Des outils utiles quand ils sont bien utilises</h2>
         </div>
         <div className="card-grid three">
           {content.aiTools.map((tool) => (
@@ -374,8 +337,8 @@ function ServicesPage({ content, quoteWhatsappUrl }) {
                 <p key={bullet}>{bullet}</p>
               ))}
             </div>
-            <a href={quoteWhatsappUrl} className="btn btn-outline" target="_blank" rel="noreferrer">
-              Discuter d'un besoin equipe
+            <a href={callPhoneUrl} className="btn btn-outline">
+              Appeler pour une equipe
             </a>
           </article>
         </div>
@@ -394,7 +357,7 @@ function BlogPage({ content, resolveImage }) {
         <p className="eyebrow">Blog</p>
         <h1>Articles pratiques pour mieux preparer vos demandes et vos outils</h1>
         <p className="hero-copy">
-          Le blog explique comment cadrer un besoin, choisir un bon outil et corriger les erreurs les plus frequentes avant de lancer une mission ou une formation.
+          Le blog vous aide a mieux expliquer votre besoin, choisir un bon outil et eviter les erreurs les plus courantes.
         </p>
         <div className="blog-topic-nav">
           {posts.map((post) => (
@@ -548,14 +511,14 @@ function TrainingsPage({ content, onUnlockLesson, resolveImage }) {
   );
 }
 
-function PricingPage({ bookingWhatsappUrl, content, quoteWhatsappUrl }) {
+function PricingPage({ callPhoneUrl, content }) {
   return (
     <main className="route-page">
       <section className="container hero page-intro">
         <p className="eyebrow">Tarifs</p>
-        <h1>Des formules lisibles selon le type d'aide attendu</h1>
+        <h1>Des prix simples selon votre besoin</h1>
         <p className="hero-copy">
-          Diagnostic, mission ciblee ou formation personnalisee: le site clarifie ce que vous achetez et comment la suite se passe.
+          Vous choisissez entre un premier avis, une aide ponctuelle ou une formation.
         </p>
       </section>
 
@@ -585,20 +548,22 @@ function PricingPage({ bookingWhatsappUrl, content, quoteWhatsappUrl }) {
 
       <section className="container section contact-section">
         <div className="split-grid split-grid-tight">
-          <article className="whatsapp-panel">
-            <p className="eyebrow">Devis</p>
-            <h2>Besoin d'une estimation avant de lancer la mission</h2>
-            <p>Le devis sert a cadrer l'objectif, le livrable, le delai et le bon format d'accompagnement.</p>
-            <a href={quoteWhatsappUrl} className="btn btn-primary" target="_blank" rel="noreferrer">
-              Demander un devis sur WhatsApp
-            </a>
+          <article className="contact-panel">
+            <p className="eyebrow">Formulaire</p>
+            <h2>Envoyer une demande simple</h2>
+            <p>Le formulaire sert a dire le besoin, le delai et le type d'aide voulu.</p>
+            <Link to="/reservation" className="btn btn-primary">
+              Ouvrir le formulaire
+            </Link>
           </article>
-          <article className="whatsapp-panel secondary">
-            <p className="eyebrow">Reservation</p>
-            <h2>Besoin d'un creneau de travail ou de formation</h2>
-            <p>Choisissez un moment, puis finalisez les details pratiques et le paiement sur WhatsApp.</p>
-            <a href={bookingWhatsappUrl} className="btn btn-outline" target="_blank" rel="noreferrer">
-              Reserver un creneau sur WhatsApp
+          <article className="contact-panel secondary">
+            <p className="eyebrow">Telephone</p>
+            <h2>Appeler au bon moment</h2>
+            <p>
+              Vous pouvez aussi appeler directement au {content.brand.phoneNumberDisplay} de {content.brand.callHours}.
+            </p>
+            <a href={callPhoneUrl} className="btn btn-outline">
+              Appeler
             </a>
           </article>
         </div>
@@ -606,14 +571,14 @@ function PricingPage({ bookingWhatsappUrl, content, quoteWhatsappUrl }) {
     </main>
   );
 }
-function ReservationPage({ content, feedback, formData, handleSubmit, nextWhatsappUrl, sending, setFormData }) {
+function ReservationPage({ callPhoneUrl, content, feedback, formData, handleSubmit, sending, setFormData }) {
   return (
     <main className="route-page">
       <section className="container hero page-intro">
         <p className="eyebrow">Reservation et devis</p>
-        <h1>Expliquez le besoin, puis poursuivez sur WhatsApp</h1>
+        <h1>Expliquez simplement votre besoin</h1>
         <p className="hero-copy">
-          Le formulaire sert a cadrer proprement la demande. Ensuite, Prometheus vous redirige vers WhatsApp pour finaliser les details et le paiement si necessaire.
+          Remplissez le formulaire pour expliquer votre besoin. Si c'est plus simple pour vous, appelez aux horaires indiques.
         </p>
       </section>
 
@@ -641,12 +606,12 @@ function ReservationPage({ content, feedback, formData, handleSubmit, nextWhatsa
               required
             />
 
-            <label htmlFor="whatsapp">Numero WhatsApp</label>
+            <label htmlFor="phone">Numero de telephone</label>
             <input
-              id="whatsapp"
-              name="whatsapp"
-              value={formData.whatsapp}
-              onChange={(event) => setFormData((prev) => ({ ...prev, whatsapp: event.target.value }))}
+              id="phone"
+              name="phone"
+              value={formData.phone}
+              onChange={(event) => setFormData((prev) => ({ ...prev, phone: event.target.value }))}
               placeholder="Ex: +33 ..."
             />
 
@@ -708,31 +673,26 @@ function ReservationPage({ content, feedback, formData, handleSubmit, nextWhatsa
             </button>
 
             {feedback ? <p className="feedback">{feedback}</p> : null}
-
-            {nextWhatsappUrl ? (
-              <a href={nextWhatsappUrl} className="btn btn-outline" target="_blank" rel="noreferrer">
-                Ouvrir WhatsApp
-              </a>
-            ) : null}
           </form>
 
           <div className="reservation-side">
             <article className="glass-card">
-              <p className="eyebrow">Contact direct</p>
-              <h2>Continuer la demande sur WhatsApp</h2>
+              <p className="eyebrow">Telephone</p>
+              <h2>Appeler Prometheus</h2>
               <p className="service-summary">
-                Une fois le besoin envoye, la suite se fait directement sur WhatsApp pour preciser les details, le tarif et le paiement.
+                Telephone: {content.brand.phoneNumberDisplay}
               </p>
+              <p className="service-summary">Horaires d'appel: {content.brand.callHours}</p>
               <div className="hero-actions compact-actions">
-                <a href={nextWhatsappUrl || buildWhatsappUrl(content, content.brand.bookingMessage)} className="btn btn-primary" target="_blank" rel="noreferrer">
-                  Ouvrir WhatsApp
+                <a href={callPhoneUrl} className="btn btn-primary">
+                  Appeler
                 </a>
               </div>
             </article>
 
             <article className="glass-card">
               <p className="eyebrow">Checklist</p>
-              <h2>Ce qu'il faut preciser pour aller vite</h2>
+              <h2>A dire dans la demande</h2>
               <ul className="detail-list">
                 {content.reservation.checklist.map((item) => (
                   <li key={item}>{item}</li>
@@ -889,7 +849,7 @@ function AdminPage({
   );
 }
 
-function LockedLessonModal({ bookingWhatsappUrl, item, onClose }) {
+function LockedLessonModal({ callPhoneUrl, item, onClose }) {
   if (!item) {
     return null;
   }
@@ -905,14 +865,14 @@ function LockedLessonModal({ bookingWhatsappUrl, item, onClose }) {
           <span>{item.lesson.duration}</span>
         </div>
         <p>
-          Ce contenu complet est reserve aux personnes qui prennent la formation ou demandent l'acces payant. La suite se finalise sur WhatsApp.
+          Ce contenu complet est reserve aux personnes qui prennent la formation ou demandent l'acces payant. Utilisez le formulaire ou appelez pour ouvrir la suite.
         </p>
         <div className="hero-actions">
           <Link to="/reservation" className="btn btn-primary" onClick={onClose}>
             Demander l'acces
           </Link>
-          <a href={bookingWhatsappUrl} className="btn btn-outline" target="_blank" rel="noreferrer">
-            Poursuivre sur WhatsApp
+          <a href={callPhoneUrl} className="btn btn-outline">
+            Appeler
           </a>
           <button type="button" className="btn btn-outline" onClick={onClose}>
             Fermer
@@ -930,7 +890,6 @@ function AppShell() {
   const [formData, setFormData] = useState(emptyForm);
   const [sending, setSending] = useState(false);
   const [feedback, setFeedback] = useState("");
-  const [nextWhatsappUrl, setNextWhatsappUrl] = useState("");
   const [apiAvailable, setApiAvailable] = useState(true);
   const [lockedItem, setLockedItem] = useState(null);
   const [adminPassword, setAdminPassword] = useState("");
@@ -985,14 +944,7 @@ function AppShell() {
   }, [isGithubPagesDemo]);
 
   const activeContent = content || fallbackContent;
-  const bookingWhatsappUrl = useMemo(
-    () => buildWhatsappUrl(activeContent, activeContent.brand.bookingMessage),
-    [activeContent]
-  );
-  const quoteWhatsappUrl = useMemo(
-    () => buildWhatsappUrl(activeContent, activeContent.brand.quoteMessage),
-    [activeContent]
-  );
+  const callPhoneUrl = useMemo(() => buildPhoneUrl(activeContent), [activeContent]);
   const isAdmin = Boolean(adminSession?.token);
   const isRemoteAdminAvailable = apiAvailable && !isGithubPagesDemo;
 
@@ -1003,12 +955,10 @@ function AppShell() {
   async function handleSubmit(event) {
     event.preventDefault();
 
-    const whatsappMessage = buildReservationMessage(activeContent, formData);
-    const whatsappUrl = buildWhatsappUrl(activeContent, whatsappMessage);
-
     if (!apiAvailable) {
-      setFeedback("Votre demande est prete. Vous pouvez poursuivre sur WhatsApp.");
-      setNextWhatsappUrl(whatsappUrl);
+      setFeedback(
+        `Le formulaire en ligne n'est pas encore disponible sur cette version. Appelez le ${activeContent.brand.phoneNumberDisplay} de ${activeContent.brand.callHours}.`
+      );
       return;
     }
 
@@ -1029,7 +979,6 @@ function AppShell() {
       }
 
       setFeedback(result.message);
-      setNextWhatsappUrl(result.whatsappUrl || whatsappUrl);
       setFormData(emptyForm);
     } catch (err) {
       setFeedback(err.message);
@@ -1176,16 +1125,15 @@ function AppShell() {
           path="/"
           element={
             <HomePage
-              bookingWhatsappUrl={bookingWhatsappUrl}
+              callPhoneUrl={callPhoneUrl}
               content={content}
-              quoteWhatsappUrl={quoteWhatsappUrl}
               resolveImage={resolveImage}
             />
           }
         />
         <Route
           path="/services"
-          element={<ServicesPage content={content} quoteWhatsappUrl={quoteWhatsappUrl} />}
+          element={<ServicesPage callPhoneUrl={callPhoneUrl} content={content} />}
         />
         <Route
           path="/formations"
@@ -1202,9 +1150,8 @@ function AppShell() {
           path="/tarifs"
           element={
             <PricingPage
-              bookingWhatsappUrl={bookingWhatsappUrl}
+              callPhoneUrl={callPhoneUrl}
               content={content}
-              quoteWhatsappUrl={quoteWhatsappUrl}
             />
           }
         />
@@ -1212,11 +1159,11 @@ function AppShell() {
           path="/reservation"
           element={
             <ReservationPage
+              callPhoneUrl={callPhoneUrl}
               content={content}
               feedback={feedback}
               formData={formData}
               handleSubmit={handleSubmit}
-              nextWhatsappUrl={nextWhatsappUrl}
               sending={sending}
               setFormData={setFormData}
             />
@@ -1225,12 +1172,12 @@ function AppShell() {
         <Route
           path="/connexion"
           element={
-              <AdminPage
-                adminFeedback={adminFeedback}
-                adminLoading={adminLoading}
-                adminPassword={adminPassword}
-                adminSaving={adminSaving}
-                content={content}
+            <AdminPage
+              adminFeedback={adminFeedback}
+              adminLoading={adminLoading}
+              adminPassword={adminPassword}
+              adminSaving={adminSaving}
+              content={content}
               handleAdminFieldChange={handleAdminFieldChange}
               handleAdminLogin={handleAdminLogin}
               handleAdminLogout={handleAdminLogout}
@@ -1258,13 +1205,11 @@ function AppShell() {
           <Link to="/formations">Formations</Link>
           <Link to="/blog">Blog</Link>
           <Link to="/reservation">Reservation</Link>
-          <a href={quoteWhatsappUrl} target="_blank" rel="noreferrer">
-            WhatsApp
-          </a>
+          <a href={callPhoneUrl}>Appeler</a>
         </div>
       </footer>
 
-      <LockedLessonModal bookingWhatsappUrl={bookingWhatsappUrl} item={lockedItem} onClose={() => setLockedItem(null)} />
+      <LockedLessonModal callPhoneUrl={callPhoneUrl} item={lockedItem} onClose={() => setLockedItem(null)} />
       <SeniorChat apiAvailable={apiAvailable} resolveApiPath={getApiPath} />
     </div>
   );

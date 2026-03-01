@@ -61,12 +61,12 @@ function buildTaskInstruction({ intent, topic, message, objective, completedModu
     : [];
 
   if (!supportedIntents.has(intent)) {
-    throw createBadRequest("intent is invalid.");
+    throw createBadRequest("Le type de demande IA est invalide.");
   }
 
   if (intent === "guide_3_steps") {
     if (!safeMessage) {
-      throw createBadRequest("message is required for guide_3_steps.");
+      throw createBadRequest("Le message est requis pour le guide en 3 etapes.");
     }
     return `Mission: explique ce sujet en exactement 3 etapes utiles.
 Sujet: ${safeMessage}
@@ -76,7 +76,7 @@ Style: phrases courtes, une mise en garde finale si necessaire.`;
 
   if (intent === "rewrite_email") {
     if (!safeMessage) {
-      throw createBadRequest("message is required for rewrite_email.");
+      throw createBadRequest("Le message est requis pour la reecriture.");
     }
     return `Mission: reformule le texte en message ou email clair, poli et directement exploitable.
 Texte de base:
@@ -101,7 +101,7 @@ Format attendu:
   }
 
   if (!safeMessage) {
-    throw createBadRequest("message is required.");
+    throw createBadRequest("Le message est requis.");
   }
 
   return `Question utilisateur: ${safeMessage}
@@ -146,7 +146,7 @@ export async function runAiAssistant({
   apiKey = process.env.OPENAI_API_KEY
 }) {
   if (!apiKey) {
-    const error = new Error("OPENAI_API_KEY is not configured.");
+    const error = new Error("OPENAI_API_KEY n'est pas configuree.");
     error.statusCode = 503;
     throw error;
   }
@@ -176,7 +176,7 @@ export async function runAiAssistant({
   const answer = completion.choices?.[0]?.message?.content?.trim();
 
   if (!answer) {
-    const error = new Error("AI response was empty.");
+    const error = new Error("La reponse IA est vide.");
     error.statusCode = 502;
     throw error;
   }

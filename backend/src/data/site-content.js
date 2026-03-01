@@ -3,134 +3,158 @@
     name: "Prometheus",
     greekSignature: "Ignis Sophia",
     promise:
-      "Accompagnement informatique, documents et IA pour aller plus vite, plus proprement, plus sereinement.",
+      "Aide simple pour vos fichiers, vos documents, vos CV, vos outils IA et vos visuels.",
     description:
-      "Prometheus accompagne particuliers, etudiants, independants et petites equipes sur les taches numeriques concretes.",
-    whatsappBaseUrl: "https://api.whatsapp.com/send",
-    whatsappNumberLink: "237652027193",
-    quoteMessage: "Bonjour Prometheus, je souhaite demander un devis.",
-    bookingMessage: "Bonjour Prometheus, je souhaite reserver un creneau.",
-    paymentMessage: "Bonjour Prometheus, je souhaite finaliser mon paiement."
+      "Prometheus aide les particuliers, les etudiants, les independants et les petites equipes a mieux travailler sur ordinateur.",
+    phoneNumberDisplay: "+33 7 58 93 35 65",
+    phoneNumberLink: "+33758933565",
+    callHours: "12h30-13h30 et 19h-20h"
   },
   hero: {
-    headline: "Vos besoins informatiques et vos documents traites avec methode.",
+    headline: "Besoin d'aide sur un fichier, un document, un CV ou un visuel ?",
     subheadline:
-      "Prometheus resout vos taches bureautiques, vous aide a produire des documents solides, a comprendre l'IA et a suivre des formations personnalisees sur Excel, Word, PowerPoint et les usages numeriques utiles.",
-    ctaPrimary: "Demander un devis",
-    ctaSecondary: "Reserver un creneau",
+      "Prometheus vous aide sur Excel, Word, PowerPoint, Canva, les CV, les dossiers et les outils IA. Vous pouvez demander une correction, une aide rapide ou une formation.",
+    ctaPrimary: "Envoyer une demande",
+    ctaSecondary: "Appeler",
     imagePath: "/images/pexels-kampus-7551617.jpg",
     imageAlt: "Accompagnement informatique et bureautique en session de travail",
     metrics: [
       {
         value: "24h",
-        label: "pour cadrer une demande et proposer une suite claire"
+        label: "pour une premiere reponse simple"
       },
       {
-        value: "4 axes",
-        label: "bureautique, documents, IA et formation personnalisee"
+        value: "6 services",
+        label: "Excel, Word, PowerPoint, CV, IA et Canva"
       },
       {
-        value: "1 interlocuteur",
-        label: "du devis initial a la livraison et au suivi"
+        value: "1 contact",
+        label: "formulaire ou telephone"
       }
     ]
   },
   audiences: [
     {
       title: "Particuliers",
-      detail: "Besoin d'aide pour un document, un CV, une presentation ou une tache numerique urgente.",
-      benefit: "Objectif: gagner du temps et obtenir un resultat propre sans bricolage."
+      detail: "Besoin d'aide pour un document, un CV, une presentation ou un fichier bloque.",
+      benefit: "But: aller plus vite et avoir un resultat propre."
     },
     {
       title: "Etudiants",
-      detail: "Besoin de structurer un memoire, un dossier, un tableau ou une soutenance.",
-      benefit: "Objectif: clarifier le fond, la forme et la qualite de presentation."
+      detail: "Besoin d'aide pour un memoire, un dossier, un tableau ou un support oral.",
+      benefit: "But: rendre le travail plus clair et plus propre."
     },
     {
       title: "Independants et TPE",
-      detail: "Besoin d'outils simples pour mieux produire, mieux presenter et mieux organiser.",
-      benefit: "Objectif: augmenter la productivite sans alourdir les process."
+      detail: "Besoin d'outils simples pour mieux produire, mieux presenter et mieux s'organiser.",
+      benefit: "But: gagner du temps sans compliquer le travail."
     },
     {
       title: "Equipes et collaborateurs",
-      detail: "Besoin d'accompagnement sur les logiciels, les documents clients et les usages IA utiles.",
-      benefit: "Objectif: fluidifier l'execution et renforcer l'autonomie des equipes."
+      detail: "Besoin d'aide sur les logiciels, les documents clients et les bons usages de l'IA.",
+      benefit: "But: travailler plus vite et avec moins de blocages."
     }
   ],
   serviceCategories: [
     {
       id: "office",
-      title: "Bureautique et taches rapides",
+      title: "Excel, Word et PowerPoint",
       summary:
-        "Correction de fichiers, mise en page, tableaux, presentations et interventions ciblees sur Excel, Word ou PowerPoint.",
+        "Aide rapide sur vos fichiers, vos tableaux, vos documents et vos presentations.",
       items: [
-        "Nettoyage et mise au propre de tableaux Excel",
-        "Correction ou finalisation de documents Word",
-        "Slides PowerPoint lisibles et presentables",
-        "Aide ponctuelle sur une tache bloquee"
+        "Corriger un tableau Excel",
+        "Mettre un document Word au propre",
+        "Refaire une presentation PowerPoint",
+        "Debloquer une tache precise"
       ],
-      cta: "Demander un devis bureautique"
+      cta: "Demander une aide bureautique"
     },
     {
       id: "documents",
-      title: "Redaction et documents professionnels",
+      title: "Documents, dossiers et memoires",
       summary:
-        "Aide a la structuration de memoires, dossiers, supports de cours, notes de synthese, lettres et livrables professionnels.",
+        "Aide pour organiser, corriger et finaliser vos documents importants.",
       items: [
-        "Mise en forme et relecture de memoires",
-        "Structuration de dossiers ou rapports",
-        "Creation de templates documentaires",
-        "Export PDF, sommaire, pagination, harmonisation"
+        "Relire un memoire ou un rapport",
+        "Faire un sommaire et une pagination propres",
+        "Reorganiser un dossier",
+        "Sortir un PDF net"
       ],
-      cta: "Faire cadrer mon document"
+      cta: "Faire corriger mon document"
     },
     {
       id: "cv",
       title: "CV, profil et candidature",
       summary:
-        "Creation ou refonte de CV, optimisation LinkedIn et accompagnement sur la presentation des experiences.",
+        "Creation ou refonte de CV et aide pour mieux presenter votre parcours.",
       items: [
-        "Creation de CV clair et moderne",
-        "Refonte d'un CV existant",
-        "Aide a la lettre ou au message d'accompagnement",
-        "Version PDF et version editable"
+        "Creer un CV clair",
+        "Refaire un CV deja existant",
+        "Aider pour le message ou la lettre",
+        "Donner une version PDF et modifiable"
       ],
       cta: "Refaire mon CV"
     },
     {
       id: "ai",
-      title: "IA utile et productivite",
+      title: "Outils IA",
       summary:
-        "Comprendre ChatGPT, Claude, Gemini, Mistral ou Perplexity pour rediger, rechercher, synthetiser et gagner du temps correctement.",
+        "Comprendre les outils IA utiles pour ecrire, chercher, resumer et gagner du temps.",
       items: [
-        "Prise en main de ChatGPT et des prompts utiles",
-        "Comparaison d'outils IA selon le besoin",
-        "Relecture, reformulation et synthese de contenus",
-        "Bonnes pratiques de confidentialite et verification"
+        "Prendre en main ChatGPT",
+        "Choisir le bon outil IA",
+        "Reecrire ou resumer un texte",
+        "Verifier avant d'envoyer"
       ],
       cta: "Comprendre les outils IA"
+    },
+    {
+      id: "canva",
+      title: "Canva et visuels",
+      summary:
+        "Creation ou correction de visuels simples pour un CV, un support, un reseau ou une presentation.",
+      items: [
+        "Creer un visuel Canva simple",
+        "Refaire un CV sur Canva",
+        "Monter une affiche ou un post",
+        "Rendre une slide plus lisible"
+      ],
+      cta: "Demander une aide Canva"
+    },
+    {
+      id: "training",
+      title: "Formation simple",
+      summary:
+        "Apprendre pas a pas un outil ou une methode sans mots compliques.",
+      items: [
+        "Apprendre Excel a votre rythme",
+        "Mieux utiliser Word",
+        "Faire des slides plus claires",
+        "Comprendre Canva ou l'IA"
+      ],
+      cta: "Choisir une formation"
     }
   ],
   workflow: [
     {
       step: "01",
       title: "Vous expliquez le besoin",
-      detail: "Par formulaire ou WhatsApp: objectif, delai, support, niveau et blocage principal."
+      detail: "Vous envoyez le formulaire ou vous appelez. Vous dites simplement ce que vous voulez faire."
     },
     {
       step: "02",
-      title: "Prometheus cadre la demande",
-      detail: "Vous recevez une recommandation: devis, mini mission, formation ou session reservee."
+      title: "Vous recevez une reponse",
+      detail: "Prometheus vous dit quoi faire ensuite: devis, aide rapide, formation ou appel."
     },
     {
       step: "03",
-      title: "Validation et paiement",
-      detail: "Le paiement et les derniers ajustements se finalisent sur WhatsApp pour aller vite."
+      title: "Vous validez la suite",
+      detail: "Vous choisissez le creneau, le devis ou la formule qui vous convient."
     },
     {
       step: "04",
-      title: "Execution et suivi",
-      detail: "Livraison, correction, ou formation pas a pas avec retour clair et actionnable."
+      title: "Le travail commence",
+      detail: "Vous recevez le resultat ou la formation avec des explications claires."
     }
   ],
   trainingModules: [
@@ -283,12 +307,62 @@
           locked: true
         }
       ]
+    },
+    {
+      id: "canva-pratique",
+      title: "Canva Pratique",
+      level: "Debutant",
+      duration: "1 h 20 + exercices simples",
+      price: "29 EUR",
+      format: "Texte + video",
+      summary:
+        "Apprendre a faire un visuel simple, un CV propre ou une presentation legere sur Canva.",
+      imagePath: "/images/pexels-kampus-7551617.jpg",
+      outcomes: [
+        "Creer un visuel propre",
+        "Choisir un modele simple",
+        "Exporter en bon format"
+      ],
+      lessons: [
+        {
+          id: "canva-text-1",
+          title: "Prendre un modele simple",
+          type: "Texte",
+          duration: "8 min",
+          summary: "Choisir un bon point de depart sans se perdre.",
+          locked: false
+        },
+        {
+          id: "canva-video-1",
+          title: "Capsule video: refaire un visuel en quelques minutes",
+          type: "Video",
+          duration: "7 min",
+          summary: "Exemple simple sur un visuel Canva.",
+          locked: false
+        },
+        {
+          id: "canva-premium-1",
+          title: "Exercice guide et correction",
+          type: "Premium",
+          duration: "15 min",
+          summary: "Faire un visuel propre de A a Z.",
+          locked: true
+        },
+        {
+          id: "canva-premium-2",
+          title: "Adapter un visuel pour CV ou reseaux",
+          type: "Premium",
+          duration: "16 min",
+          summary: "Utiliser le meme contenu sur plusieurs formats.",
+          locked: true
+        }
+      ]
     }
   ],
   aiTools: [
     {
       name: "ChatGPT",
-      role: "Redaction, synthese, ideation",
+      role: "Ecrire, resumer, trouver des idees",
       usage: "Pour clarifier un texte, resumer un sujet, preparer un plan ou gagner du temps sur une premiere version."
     },
     {
@@ -298,7 +372,7 @@
     },
     {
       name: "Gemini",
-      role: "Recherche guidee et productivite Google",
+      role: "Recherche et outils Google",
       usage: "Interesse surtout les utilisateurs de Google Workspace et de recherches rapides."
     },
     {
@@ -313,8 +387,8 @@
     },
     {
       name: "Canva",
-      role: "Design rapide et CV",
-      usage: "Pour produire un CV, une affiche, une slide ou un visuel presentable plus vite."
+      role: "Visuels, CV et presentions",
+      usage: "Pour faire un CV, une affiche, un visuel reseau ou une slide simple plus vite."
     }
   ],
   pricing: [
@@ -323,11 +397,11 @@
       name: "Diagnostic express",
       price: "0 EUR",
       period: "une fois",
-      description: "Pour cadrer le besoin, verifier la faisabilite et choisir la bonne formule.",
+      description: "Pour comprendre le besoin et choisir la bonne formule.",
       features: [
         "Lecture rapide de votre besoin",
-        "Orientation vers le bon service",
-        "Proposition de suite sur WhatsApp"
+        "Reponse simple par email ou telephone",
+        "Orientation vers le bon service"
       ],
       cta: "Recevoir un premier avis",
       highlight: false
@@ -341,7 +415,7 @@
       features: [
         "Une mission bien definie",
         "Retours et correction inclus",
-        "Paiement finalise sur WhatsApp"
+        "Suite geree par formulaire ou appel"
       ],
       cta: "Demander un devis",
       highlight: true
@@ -370,8 +444,10 @@
     services: [
       { value: "office", label: "Excel / Word / PowerPoint" },
       { value: "documents", label: "Memoire / dossier / rapport" },
-      { value: "cv", label: "CV / candidature" },
-      { value: "ai", label: "IA et productivite" },
+      { value: "cv", label: "CV / recherche d'emploi" },
+      { value: "ai", label: "IA / outils rapides" },
+      { value: "canva", label: "Canva / visuel" },
+      { value: "training", label: "Formation" },
       { value: "autre", label: "Autre besoin informatique" }
     ],
     slots: [
@@ -381,16 +457,16 @@
       { value: "flexible", label: "Flexible" }
     ],
     checklist: [
-      "Expliquez la tache ou le resultat attendu",
-      "Ajoutez le delai si la demande est urgente",
-      "Indiquez si vous souhaitez une execution, une correction ou une formation",
-      "Prometheus revient vers vous avec la suite la plus simple"
+      "Dites ce que vous voulez faire",
+      "Ajoutez le delai si c'est urgent",
+      "Precisez si vous voulez une aide, une correction ou une formation",
+      "Laissez un numero si vous voulez etre rappele"
     ]
   },
   security: {
-    title: "Confidentialite, clarification et execution propre",
+    title: "Vos donnees sont traitees avec attention",
     intro:
-      "Les demandes sont traitees avec sobriete: seules les informations utiles a la mission sont collectees, les documents sont utilises pour l'accompagnement demande, et les bonnes pratiques de verification sont appliquees sur les contenus IA.",
+      "Prometheus ne demande que les informations utiles pour comprendre votre besoin. Les documents sont utilises seulement pour l'aide demandee.",
     commitments: [
       "Collecte minimale des informations de contact et de besoin",
       "Aucune cle IA exposee dans le frontend",
@@ -399,17 +475,17 @@
       "Suppression ou archivage restreint des contenus sensibles selon le contexte"
     ],
     note:
-      "Pour une mise en production sensible, l'etape suivante logique est d'ajouter une vraie authentification et un stockage chiffre cote serveur."
+      "Pour des contenus tres sensibles, la prochaine etape utile reste un espace securise avec authentification forte."
   },
   enterprise: {
-    title: "Prometheus peut aussi accompagner les petites equipes",
+    title: "Prometheus peut aussi aider une petite equipe",
     text:
-      "La logique du site peut evoluer vers une offre plus structuree pour les entreprises: onboarding logiciel, documentation interne, capsules de formation et assistance a la prise en main d'outils metier.",
+      "Le service peut aussi aider une petite equipe sur les logiciels du quotidien, les supports internes et les bons usages de l'IA.",
     bullets: [
       "Parcours internes sur les logiciels du quotidien",
       "Aide a la redaction de supports et procedures",
       "Montage de mini bibliotheques de formation",
-      "Accompagnement a l'adoption raisonnee de l'IA"
+      "Aide simple pour bien utiliser l'IA"
     ]
   },
   testimonials: [
@@ -563,7 +639,7 @@
     {
       question: "Comment se passe le paiement ?",
       answer:
-        "Le cadrage initial se fait sur le site puis la finalisation du paiement et des details pratiques se fait sur WhatsApp pour aller vite."
+        "Le site sert d'abord a envoyer la demande. Ensuite, vous recevez un devis simple ou un creneau, puis la suite se fait par email ou par telephone."
     },
     {
       question: "Peut-on envoyer un document sensible ?",
@@ -573,7 +649,7 @@
     {
       question: "Les formations sont-elles disponibles immediatement ?",
       answer:
-        "Une partie du contenu reste visible gratuitement. Les modules complets, videos et exercices corriges se debloquent via une demande de devis ou un paiement finalise sur WhatsApp."
+        "Une partie du contenu reste visible gratuitement. Les modules complets, les videos et les exercices corriges s'ouvrent apres validation de la formule choisie."
     }
   ]
 };

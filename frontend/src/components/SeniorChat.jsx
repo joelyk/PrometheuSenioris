@@ -4,7 +4,7 @@ import { useLocation } from "react-router-dom";
 const quickPrompts = [
   "Explique Excel en 3 etapes simples",
   "Reecris un email professionnel",
-  "Comment cadrer une demande PowerPoint ?"
+  "Comment faire un visuel simple sur Canva ?"
 ];
 
 const modes = [
@@ -15,10 +15,10 @@ const modes = [
 ];
 
 function getRouteContext(pathname) {
-  if (pathname.includes("formations")) return "formations Excel, Word et PowerPoint";
+  if (pathname.includes("formations")) return "formations Excel, Word, PowerPoint et Canva";
   if (pathname.includes("services")) return "services informatiques et documentaires";
   if (pathname.includes("tarifs")) return "tarifs, devis et missions";
-  if (pathname.includes("reservation")) return "reservation, devis et WhatsApp";
+  if (pathname.includes("reservation")) return "reservation, devis et telephone";
   if (pathname.includes("connexion")) return "espace administrateur et gestion de visuels";
   return "accompagnement informatique et productivite";
 }

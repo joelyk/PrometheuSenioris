@@ -1030,6 +1030,12 @@ h3 {
   color: #0f4b82;
 }
 
+.hero-overlay-card span {
+  color: var(--text-soft);
+  font-size: 0.84rem;
+  line-height: 1.45;
+}
+
 .hero-mini-grid {
   margin-top: 1rem;
   display: grid;
@@ -1168,7 +1174,7 @@ h3 {
 }
 
 .security-panel,
-.whatsapp-panel,
+.contact-panel,
 .admin-card {
   border-radius: 24px;
   border: 1px solid var(--line);
@@ -1178,7 +1184,7 @@ h3 {
 }
 
 .security-panel p,
-.whatsapp-panel p,
+.contact-panel p,
 .admin-card p {
   color: var(--text-soft);
 }
@@ -1457,7 +1463,7 @@ h3 {
   background: linear-gradient(145deg, #d8edff 0%, #f8fbff 100%);
 }
 
-.whatsapp-panel.secondary {
+.contact-panel.secondary {
   background: linear-gradient(160deg, #ffffff 0%, #f2f8ff 100%);
 }
 

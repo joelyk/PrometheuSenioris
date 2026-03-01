@@ -97,7 +97,7 @@ function validateChoice(options, value, fieldName) {
   const safeValue = sanitizeText(value, 80);
 
   if (!safeValue || !allowed.has(safeValue)) {
-    throw createHttpError(400, `${fieldName} is invalid.`);
+    throw createHttpError(400, `${fieldName} est invalide.`);
   }
 
   return safeValue;
@@ -106,25 +106,25 @@ function validateChoice(options, value, fieldName) {
 function validateContactPayload(payload, content) {
   const name = sanitizeText(payload?.name, 120);
   const email = sanitizeText(payload?.email, 180).toLowerCase();
-  const whatsapp = sanitizePhoneLike(payload?.whatsapp, 80);
+  const phone = sanitizePhoneLike(payload?.phone, 80);
   const goal = sanitizeText(payload?.goal, 2000);
 
   if (name.length < 2) {
-    throw createHttpError(400, "name is required.");
+    throw createHttpError(400, "Le nom est requis.");
   }
 
   if (!validateEmail(email)) {
-    throw createHttpError(400, "email is invalid.");
+    throw createHttpError(400, "L'email est invalide.");
   }
 
   if (goal.length < 10) {
-    throw createHttpError(400, "goal is too short.");
+    throw createHttpError(400, "Le besoin est trop court.");
   }
 
   return {
     name,
     email,
-    whatsapp,
+    phone,
     requestType: validateChoice(content.reservation.requestTypes, payload?.requestType || "devis", "requestType"),
     service: validateChoice(content.reservation.services, payload?.service || "office", "service"),
     preferredSlot: validateChoice(content.reservation.slots, payload?.preferredSlot || "asap", "preferredSlot"),
@@ -136,7 +136,7 @@ function validateAiTextField(value, fieldName, maxLength = 2000) {
   const safeValue = sanitizeText(value, maxLength);
 
   if (!safeValue) {
-    throw createHttpError(400, `${fieldName} is required.`);
+    throw createHttpError(400, `${fieldName} est requis.`);
   }
 
   return safeValue;
@@ -166,57 +166,10 @@ async function readCurrentContent() {
   return buildSiteContent(contentOverridesStore.get());
 }
 
-function buildWhatsappUrl(content, message) {
-  const baseUrl = content?.brand?.whatsappBaseUrl || "https://api.whatsapp.com/send";
-  const params = new URLSearchParams();
-  const phone = String(content?.brand?.whatsappNumberLink || "")
-    .replace(/\D/g, "")
-    .trim();
-
-  if (phone) {
-    params.set("phone", phone);
-  }
-
-  if (message) {
-    params.set("text", String(message).trim());
-  }
-
-  const query = params.toString();
-  return query ? `${baseUrl}?${query}` : baseUrl;
-}
-
-function findLabel(options, value) {
-  return options.find((item) => item.value === value)?.label || value;
-}
-
-function buildLeadWhatsappMessage(content, lead) {
-  const requestTypeLabel = findLabel(content.reservation.requestTypes, lead.requestType || "devis");
-  const serviceLabel = findLabel(content.reservation.services, lead.service || "office");
-  const slotLabel = findLabel(content.reservation.slots, lead.preferredSlot || "asap");
-
-  const intro =
-    lead.requestType === "formation"
-      ? content.brand.paymentMessage
-      : lead.requestType === "creneau"
-      ? content.brand.bookingMessage
-      : content.brand.quoteMessage;
-
-  return [
-    intro,
-    `Nom: ${lead.name}`,
-    `Email: ${lead.email}`,
-    `WhatsApp: ${lead.whatsapp || "non renseigne"}`,
-    `Type: ${requestTypeLabel}`,
-    `Service: ${serviceLabel}`,
-    `Disponibilite: ${slotLabel}`,
-    `Besoin: ${lead.goal}`
-  ].join("\n");
-}
-
 function verifyAdminRequest(req) {
   const adminKey = getAdminKey();
   if (!adminKey) {
-    return { ok: false, status: 404, message: "Not found." };
+    return { ok: false, status: 404, message: "Introuvable." };
   }
 
   const providedKey = sanitizeText(req.header("x-admin-key"), 500);
@@ -231,7 +184,7 @@ function verifyAdminRequest(req) {
     return { ok: true, mode: "session", expiresAt: verification.expiresAt };
   }
 
-  return { ok: false, status: 401, message: "Unauthorized." };
+  return { ok: false, status: 401, message: "Acces non autorise." };
 }
 
 function validateSecurityConfiguration(allowedOrigins) {
@@ -326,7 +279,7 @@ app.use((req, res, next) => {
   if (process.env.REQUIRE_HTTPS === "true" && !req.secure) {
     res.status(400).json({
       success: false,
-      message: "HTTPS is required."
+      message: "HTTPS est requis."
     });
     return;
   }
@@ -339,7 +292,7 @@ app.use((req, res, next) => {
   if (origin && !isAllowedOrigin(origin)) {
     res.status(403).json({
       success: false,
-      message: "Origin not allowed."
+      message: "Origine non autorisee."
     });
     return;
   }
@@ -438,7 +391,7 @@ app.get("/api/pricing", asyncHandler(async (_req, res) => {
 app.post("/api/admin/login", adminLoginLimiter, requireJson, (req, res) => {
   const adminKey = getAdminKey();
   if (!adminKey) {
-    res.status(404).json({ success: false, message: "Not found." });
+    res.status(404).json({ success: false, message: "Introuvable." });
     return;
   }
 
@@ -519,7 +472,6 @@ app.post("/api/contact", requireJson, async (req, res, next) => {
       ...validatedLead,
       createdAt: new Date().toISOString()
     };
-    const whatsappUrl = buildWhatsappUrl(content, buildLeadWhatsappMessage(content, newLead));
 
     leadsStore
       .add(newLead)
@@ -527,16 +479,14 @@ app.post("/api/contact", requireJson, async (req, res, next) => {
         res.status(201).json({
           success: true,
           message:
-            "Votre demande a bien ete envoyee. Vous pouvez maintenant poursuivre sur WhatsApp.",
-          whatsappUrl
+            "Votre demande a bien ete envoyee. Prometheus revient vers vous par email ou par telephone."
         });
       })
       .catch(() => {
         res.status(201).json({
           success: true,
           message:
-            "Votre demande a bien ete envoyee. Vous pouvez maintenant poursuivre sur WhatsApp.",
-          whatsappUrl
+            "Votre demande a bien ete envoyee. Prometheus revient vers vous par email ou par telephone."
         });
       });
   } catch (error) {
@@ -656,7 +606,7 @@ app.post("/api/ai/next-course", requireJson, async (req, res) => {
 app.use("/api", (_req, res) => {
   res.status(404).json({
     success: false,
-    message: "Not found."
+    message: "Introuvable."
   });
 });
 

@@ -1,11 +1,10 @@
 ﻿# Prometheus
 
-Plateforme web React + Express pour proposer des services informatiques, des formations personnalisees, un parcours de devis / reservation puis une reprise sur WhatsApp.
+Plateforme web React + Express pour proposer des services informatiques, des formations personnalisees, un parcours de devis / reservation et un contact par formulaire ou telephone.
 
 ## Positionnement
 
-Prometheus n'est plus reserve aux seniors.
-Le site est maintenant pense pour:
+Le site est pense pour:
 - particuliers
 - etudiants
 - independants et TPE
@@ -15,7 +14,7 @@ Le coeur de l'offre:
 - aide sur Excel, Word, PowerPoint
 - correction et structuration de documents, memoires, rapports
 - creation ou refonte de CV
-- accompagnement sur les outils IA et la productivite
+- accompagnement sur les outils IA, Canva et la productivite
 - formations avec apercu gratuit et contenus premium verrouilles
 
 ## Stack
@@ -31,8 +30,13 @@ Le coeur de l'offre:
 1. Le visiteur decouvre les services et les formations.
 2. Il remplit un devis ou une reservation.
 3. Le backend enregistre la demande.
-4. Le site propose ensuite une continuation sur WhatsApp.
+4. Le site confirme la demande et permet un suivi par email ou par telephone.
 5. Les modules premium sont debloques apres validation / paiement hors site.
+
+Contact direct:
+- formulaire de demande sur `/#/reservation`
+- telephone: `+33 7 58 93 35 65`
+- horaires d'appel: `12h30-13h30` et `19h-20h`
 
 ## Pages frontend
 
@@ -60,7 +64,7 @@ Redirections legacy encore supportees:
 - page formations avec contenu gratuit + modules verrouilles
 - modal de debloquage premium
 - page tarifs avec devis et reservation
-- page reservation avec reprise WhatsApp
+- page reservation avec formulaire clair et contact telephone
 - espace connexion / admin pour modifier les visuels
 - widget IA flottant `Tuteur Promethee`
 
