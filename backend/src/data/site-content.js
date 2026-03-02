@@ -512,144 +512,144 @@
     {
       id: "excel-demande-claire",
       category: "Productivite",
-      title: "Comment cadrer une demande Excel avant de demander de l'aide",
+      title: "Bien demander une aide sur Excel",
       excerpt:
-        "Les 4 informations a fournir pour obtenir une reponse rapide sur un tableau, une formule ou un fichier a corriger.",
+        "Les points simples a donner pour avoir une aide rapide sur un tableau ou un fichier Excel.",
       readTime: "4 min",
       imagePath: "/images/pexels-kampus-7983612.jpg",
       intro:
-        "Une demande Excel bien formulee evite les allers-retours inutiles. Le but n'est pas seulement de dire qu'un fichier bloque, mais d'expliquer ce que vous attendez a la fin.",
+        "Quand vous demandez une aide sur Excel, il faut dire clairement ce que vous voulez. Cela permet d'aller plus vite.",
       sections: [
         {
-          title: "1. Donner le resultat attendu",
+          title: "1. Dire le resultat voulu",
           body:
-            "Expliquez d'abord ce que vous voulez obtenir: un total, un pourcentage, un tableau propre, un graphique ou une correction complete du fichier."
+            "Dites d'abord ce que vous voulez avoir a la fin: un total, un pourcentage, un tableau propre ou un graphique."
         },
         {
-          title: "2. Montrer ou se situe le blocage",
+          title: "2. Montrer ou ca bloque",
           body:
-            "Precisez si le probleme vient d'une formule, d'un filtre, d'un format de cellule, d'un tri ou d'une organisation generale du tableau."
+            "Expliquez si le probleme vient d'une formule, d'un filtre, d'un tri ou simplement d'un tableau mal range."
         },
         {
-          title: "3. Indiquer le delai",
+          title: "3. Dire quand il le faut",
           body:
-            "Un besoin pour aujourd'hui, pour une reunion demain ou pour une remise de dossier ne se traite pas de la meme maniere. Le delai aide a prioriser."
+            "Si c'est pour aujourd'hui, pour demain ou pour plus tard, dites-le. Le delai aide a bien organiser la reponse."
         }
       ],
       takeaway:
-        "Plus la demande est precise, plus la reponse peut etre directe, rapide et utile."
+        "Plus votre demande est simple et precise, plus l'aide sera rapide."
     },
     {
       id: "ia-bon-outil",
       category: "IA",
-      title: "ChatGPT, Claude ou Perplexity: quel outil choisir selon la tache",
+      title: "Quel outil IA choisir ?",
       excerpt:
-        "Une grille simple pour savoir quel assistant utiliser pour rediger, verifier ou synthetiser sans perdre de temps.",
+        "Un repere simple pour savoir quel outil utiliser selon ce que vous voulez faire.",
       readTime: "5 min",
       imagePath: "/images/pexels-kampus-7983616.jpg",
       intro:
-        "Tous les outils IA ne servent pas exactement a la meme chose. Le bon choix depend surtout du type de tache et du niveau de verification attendu.",
+        "Tous les outils IA ne servent pas au meme travail. Le plus utile est de choisir l'outil selon votre besoin du moment.",
       sections: [
         {
-          title: "1. Pour lancer une premiere version",
+          title: "1. Pour commencer vite",
           body:
-            "ChatGPT reste tres utile pour demarrer un texte, structurer un plan, reformuler ou proposer plusieurs pistes rapidement."
+            "ChatGPT est pratique pour commencer un texte, trouver des idees ou reformuler rapidement."
         },
         {
-          title: "2. Pour lire un contenu long",
+          title: "2. Pour relire un texte long",
           body:
-            "Claude est souvent plus confortable quand il faut relire un document dense, comparer des versions ou clarifier un contenu deja riche."
+            "Claude peut aider quand vous avez un document long a relire ou a rendre plus clair."
         },
         {
-          title: "3. Pour verifier avec des sources",
+          title: "3. Pour verifier une information",
           body:
-            "Perplexity devient interessant lorsqu'il faut retrouver des sources ou verifier un point avant de reutiliser une information dans un livrable."
+            "Perplexity est utile quand vous voulez retrouver des sources ou verifier un point avant de l'utiliser."
         }
       ],
       takeaway:
-        "Le bon reflexe n'est pas d'utiliser un seul outil partout, mais de choisir celui qui correspond a l'action du moment."
+        "Le bon outil depend de la tache, pas de la mode."
     },
     {
       id: "document-structure",
       category: "Documents",
-      title: "Les erreurs de structure qui ralentissent un memoire ou un rapport",
+      title: "Rendre un document plus clair",
       excerpt:
-        "Avant de corriger le style, il faut d'abord stabiliser les titres, le plan, la pagination et les parties attendues.",
+        "Avant la mise en page finale, il faut d'abord avoir une structure simple et propre.",
       readTime: "6 min",
       imagePath: "/images/pexels-fauxels-3184291.jpg",
       intro:
-        "La plupart des documents longs deviennent difficiles a corriger non pas a cause du texte lui-meme, mais parce que la structure est fragile ou incoherente.",
+        "Un document devient vite difficile a lire si les titres, le plan et les pages ne sont pas bien organises.",
       sections: [
         {
-          title: "1. Des titres non harmonises",
+          title: "1. Avoir des titres clairs",
           body:
-            "Quand chaque titre a un style different, le document devient instable. Il faut d'abord unifier la hierarchie avant toute mise en page fine."
+            "Si chaque titre est different, le document devient confus. Il faut garder la meme logique du debut a la fin."
         },
         {
-          title: "2. Un plan qui change en cours de route",
+          title: "2. Garder un plan simple",
           body:
-            "Si les parties se repetent, se chevauchent ou changent d'intention, la lecture devient confuse. Le plan doit etre fixe avant la finition."
+            "Si les parties se repetent ou changent tout le temps, la lecture devient difficile. Un bon plan aide tout le document."
         },
         {
-          title: "3. Une pagination et un sommaire non relies",
+          title: "3. Verifier les pages et le sommaire",
           body:
-            "Un sommaire manuel ou des sauts de page mal places cassent rapidement la coherence. Les styles et sections doivent piloter la structure."
+            "Le sommaire et les pages doivent suivre la meme logique. Sinon le document parait vite mal fini."
         }
       ],
       takeaway:
-        "Un document propre commence par une architecture stable, pas par une decoration visuelle."
+        "Un document propre commence par un plan clair."
     },
     {
       id: "securite-documents-ia",
       category: "Securite",
-      title: "Ce qu'il faut verifier avant d'envoyer un document ou un contenu a corriger",
+      title: "Partager un document sans prendre de risque",
       excerpt:
-        "Un rappel simple des bonnes pratiques pour proteger les informations utiles, limiter les risques et garder la maitrise des donnees partagees.",
+        "Quelques verifications simples avant d'envoyer un document a corriger ou a relire.",
       readTime: "5 min",
       imagePath: "/images/pexels-kampus-7551617.jpg",
       intro:
-        "Quand un document contient des informations personnelles, professionnelles ou confidentielles, il faut partager uniquement ce qui est necessaire a la mission.",
+        "Avant d'envoyer un document, il faut verifier qu'il ne contient pas plus d'informations que necessaire.",
       sections: [
         {
-          title: "1. Retirer ce qui n'est pas utile",
+          title: "1. Enlever le trop personnel",
           body:
-            "Supprimez ou masquez les informations non necessaires: identifiants, donnees bancaires, numeros sensibles ou commentaires internes qui ne servent pas a la correction."
+            "Retirez ou cachez ce qui n'est pas utile: mots de passe, donnees bancaires, numeros sensibles ou commentaires internes."
         },
         {
-          title: "2. Clarifier l'objectif exact",
+          title: "2. Dire ce que vous attendez",
           body:
-            "Indiquez si vous voulez une correction, une mise en page, une reformulation ou un accompagnement. Cela evite de partager plus de contenu que necessaire."
+            "Dites si vous voulez une correction, une mise en page ou un accompagnement. Cela evite d'envoyer trop de choses."
         },
         {
-          title: "3. Verifier avant reutilisation",
+          title: "3. Relire avant d'envoyer plus loin",
           body:
-            "Quand une IA est utilisee pour aider a reformuler ou synthetiser, une verification humaine reste obligatoire avant tout envoi final ou diffusion."
+            "Si une IA aide a reformuler un texte, il faut toujours relire avant un envoi final."
         }
       ],
       takeaway:
-        "La bonne pratique n'est pas de tout transmettre, mais de transmettre seulement ce qui permet de faire correctement le travail."
+        "Le bon reflexe est simple: envoyer seulement ce qui est utile."
     }
   ],
   faq: [
     {
-      question: "Prometheus fait-il a ma place ou m'apprend a faire ?",
+      question: "Prometheus fait a ma place ou explique aussi ?",
       answer:
-        "Les deux existent. Selon le besoin, Prometheus peut executer une tache, corriger un support, ou construire une formation personnalisee pour vous rendre autonome."
+        "Les deux. Vous pouvez demander une correction, une aide directe ou une vraie explication pas a pas."
     },
     {
       question: "Comment se passe le paiement ?",
       answer:
-        "Le site sert d'abord a envoyer la demande. Ensuite, vous recevez un devis simple ou un creneau, puis la suite se fait par email ou par telephone."
+        "Vous envoyez d'abord votre demande. Ensuite, vous recevez un devis simple ou une proposition de creneau."
     },
     {
       question: "Peut-on envoyer un document sensible ?",
       answer:
-        "Oui, mais uniquement si cela est necessaire a la mission. Le site insiste sur la confidentialite et l'etape suivante recommandee en production est un espace securise avec authentification forte."
+        "Oui, mais seulement si c'est utile. Le mieux est d'enlever ce qui est trop personnel avant l'envoi."
     },
     {
       question: "Les formations sont-elles disponibles immediatement ?",
       answer:
-        "Une partie du contenu reste visible gratuitement. Les modules complets, les videos et les exercices corriges s'ouvrent apres validation de la formule choisie."
+        "Une partie est visible tout de suite. Le reste s'ouvre apres validation de la formule choisie."
     }
   ]
 };

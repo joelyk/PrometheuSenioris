@@ -100,6 +100,25 @@ function findBlogPost(content, postId) {
   return content.blogPosts.find((post) => post.id === postId) || null;
 }
 
+function FaqSection({ content }) {
+  return (
+    <section className="container section">
+      <div className="section-heading">
+        <p className="eyebrow">FAQ</p>
+        <h2>Questions simples</h2>
+      </div>
+      <div className="faq-list">
+        {content.faq.map((item) => (
+          <article key={item.question} className="faq-item">
+            <h3>{item.question}</h3>
+            <p>{item.answer}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 function HomePage({ callPhoneUrl, content, resolveImage }) {
   const clarityBlocks = [
     {
@@ -272,6 +291,8 @@ function HomePage({ callPhoneUrl, content, resolveImage }) {
           ))}
         </div>
       </section>
+
+      <FaqSection content={content} />
     </main>
   );
 }
