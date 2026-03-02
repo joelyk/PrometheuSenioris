@@ -496,13 +496,13 @@ export const fallbackContent = {
     "title": "Vos donnees sont traitees avec attention",
     "intro": "Prometheus ne demande que les informations utiles pour comprendre votre besoin. Les documents sont utilises seulement pour l'aide demandee.",
     "commitments": [
-      "Collecte minimale des informations de contact et de besoin",
-      "Aucune cle IA exposee dans le frontend",
-      "Rate limiting et CORS sur l'API",
-      "Verification humaine avant toute livraison importante",
-      "Suppression ou archivage restreint des contenus sensibles selon le contexte"
+      "On demande seulement les informations utiles",
+      "Vos documents servent uniquement a l'aide demandee",
+      "Les acces sont limites pour proteger les echanges",
+      "Chaque livraison importante est relue avant envoi",
+      "Les contenus sensibles ne restent pas visibles inutilement"
     ],
-    "note": "Pour des contenus tres sensibles, la prochaine etape utile reste un espace securise avec authentification forte."
+    "note": "Pour des contenus tres sensibles, un mode d'echange plus protege peut etre prevu."
   },
   "enterprise": {
     "title": "Prometheus peut aussi aider une petite equipe",

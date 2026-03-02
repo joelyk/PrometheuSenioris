@@ -5,7 +5,8 @@ import {
   NavLink,
   Navigate,
   Route,
-  Routes
+  Routes,
+  useParams
 } from "react-router-dom";
 import SeniorChat from "./components/SeniorChat";
 import { fallbackContent } from "./fallbackContent";
@@ -93,6 +94,10 @@ function createAdminDraft(content) {
       content.trainingModules.map((module) => [module.id, module.imagePath])
     )
   };
+}
+
+function findBlogPost(content, postId) {
+  return content.blogPosts.find((post) => post.id === postId) || null;
 }
 
 function HomePage({ callPhoneUrl, content, resolveImage }) {
@@ -242,8 +247,8 @@ function HomePage({ callPhoneUrl, content, resolveImage }) {
                 </p>
                 <h3>{post.title}</h3>
                 <p>{post.excerpt}</p>
-                <Link to="/blog" className="link-button">
-                  Lire le blog
+                <Link to={`/blog/${post.id}`} className="link-button">
+                  Lire l'article
                 </Link>
               </div>
             </article>
@@ -361,9 +366,9 @@ function BlogPage({ content, resolveImage }) {
         </p>
         <div className="blog-topic-nav">
           {posts.map((post) => (
-            <a key={post.id} href={`#${post.id}`} className="blog-topic-chip">
+            <Link key={post.id} to={`/blog/${post.id}`} className="blog-topic-chip">
               {post.category}
-            </a>
+            </Link>
           ))}
         </div>
       </section>
@@ -378,8 +383,8 @@ function BlogPage({ content, resolveImage }) {
               </p>
               <h2>{featuredPost.title}</h2>
               <p>{featuredPost.intro}</p>
-              <Link to="/reservation" className="btn btn-primary">
-                Transformer ce besoin en demande concrete
+              <Link to={`/blog/${featuredPost.id}`} className="btn btn-primary">
+                Lire l'article
               </Link>
             </div>
           </article>
@@ -387,38 +392,122 @@ function BlogPage({ content, resolveImage }) {
       ) : null}
 
       <section className="container section contact-section">
-        <div className="blog-article-stack">
+        <div className="card-grid three">
           {posts.map((post, index) => (
-            <article key={post.id} id={post.id} className="blog-article-card">
-              <div className="blog-article-head">
-                <img src={resolveImage(post.imagePath)} alt={post.title} loading="lazy" />
-                <div>
-                  <p className="blog-meta">
-                    {post.category} - {post.readTime}
-                  </p>
-                  <span className="blog-index">Article {index + 1}</span>
-                  <h2>{post.title}</h2>
-                  <p>{post.intro}</p>
-                </div>
-              </div>
-
-              <div className="blog-section-grid">
-                {post.sections.map((section) => (
-                  <article key={section.title} className="blog-section-card">
-                    <h3>{section.title}</h3>
-                    <p>{section.body}</p>
-                  </article>
-                ))}
-              </div>
-
-              <div className="blog-takeaway">
-                <strong>A retenir</strong>
-                <p>{post.takeaway}</p>
+            <article key={post.id} className="blog-card">
+              <img src={resolveImage(post.imagePath)} alt={post.title} loading="lazy" />
+              <div className="blog-card-body">
+                <p className="blog-meta">
+                  {post.category} - {post.readTime}
+                </p>
+                <span className="blog-index">Article {index + 1}</span>
+                <h3>{post.title}</h3>
+                <p>{post.excerpt}</p>
+                <Link to={`/blog/${post.id}`} className="btn btn-outline">
+                  Ouvrir l'article
+                </Link>
               </div>
             </article>
           ))}
         </div>
       </section>
+    </main>
+  );
+}
+
+function BlogArticlePage({ content, resolveImage }) {
+  const { postId } = useParams();
+  const post = findBlogPost(content, postId);
+
+  if (!post) {
+    return <Navigate to="/blog" replace />;
+  }
+
+  const relatedPosts = content.blogPosts.filter((item) => item.id !== post.id).slice(0, 3);
+
+  return (
+    <main className="route-page">
+      <section className="container hero page-intro">
+        <Link to="/blog" className="crumb-link">
+          Retour au blog
+        </Link>
+        <p className="eyebrow">{post.category}</p>
+        <h1>{post.title}</h1>
+        <p className="hero-copy">{post.intro}</p>
+      </section>
+
+      <section className="container section">
+        <article className="blog-featured-panel">
+          <img src={resolveImage(post.imagePath)} alt={post.title} loading="lazy" />
+          <div>
+            <p className="blog-meta">{post.readTime}</p>
+            <h2>Ce qu'il faut retenir</h2>
+            <p>{post.takeaway}</p>
+            <Link to="/reservation" className="btn btn-primary">
+              Faire une demande sur ce sujet
+            </Link>
+          </div>
+        </article>
+      </section>
+
+      <section className="container section contact-section">
+        <div className="blog-detail-stack">
+          {post.sections.map((section, index) => (
+            <article key={section.title} className="blog-detail-card">
+              <span className="blog-index">Point {index + 1}</span>
+              <h2>{section.title}</h2>
+              <p>{section.body}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="container section">
+        <div className="blog-detail-cta">
+          <div>
+            <p className="eyebrow">Besoin d'aller plus loin</p>
+            <h2>Vous voulez appliquer cela a votre cas ?</h2>
+            <p>
+              Si vous voulez un avis, une correction ou un accompagnement sur ce sujet, passez
+              directement par la page de contact.
+            </p>
+          </div>
+          <div className="cta-banner-actions">
+            <Link to="/reservation" className="btn btn-primary">
+              Aller a la page de contact
+            </Link>
+            <Link to="/tarifs" className="btn btn-outline">
+              Voir les tarifs
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {relatedPosts.length ? (
+        <section className="container section">
+          <div className="section-heading">
+            <p className="eyebrow">Autres articles</p>
+            <h2>Continuer la lecture</h2>
+          </div>
+          <div className="card-grid three">
+            {relatedPosts.map((item) => (
+              <article key={item.id} className="blog-card">
+                <img src={resolveImage(item.imagePath)} alt={item.title} loading="lazy" />
+                <div className="blog-card-body">
+                  <p className="blog-meta">
+                    {item.category} - {item.readTime}
+                  </p>
+                  <h3>{item.title}</h3>
+                  <p>{item.excerpt}</p>
+                  <Link to={`/blog/${item.id}`} className="link-button">
+                    Lire cet article
+                  </Link>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+      ) : null}
     </main>
   );
 }
@@ -1146,6 +1235,10 @@ function AppShell() {
           }
         />
         <Route path="/blog" element={<BlogPage content={content} resolveImage={resolveImage} />} />
+        <Route
+          path="/blog/:postId"
+          element={<BlogArticlePage content={content} resolveImage={resolveImage} />}
+        />
         <Route
           path="/tarifs"
           element={
